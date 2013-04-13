@@ -24,7 +24,7 @@ http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging
 ####Good branching practice
 http://nvie.com/posts/a-successful-git-branching-model/
 
-##What does it mean for us?
+###What does it mean for us?
 So, (1) if you are adding a small change, pushing to master is fine if you are certain that it will not break stuff, because master branch will always hold a working player. Players will be tagged by version numbers.
 
 (2) if you are developing a big new feature, please create a new branch. Then we all get together and merge it back into master to make sure that nothing breaks.
