@@ -18,10 +18,10 @@ philosophy of development
 
 First of all, git is awesome and will save us headache, since we are a team of four, which is reasonably big.
 
-##Learn how merge works with git
+####Learn how merge works with git
 http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging
 
-##Good branching practice
+####Good branching practice
 http://nvie.com/posts/a-successful-git-branching-model/
 
 ##What does it mean for us?
