@@ -1,23 +1,29 @@
 platypus
 ========
+Believe in the platypus!
 
 Our player doesn't play games with your heart.
+![alt text](https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRp5phnGtV1Gky5aEBD5gDsHxMVALRIeEVVTBis7ufDkCW29hfY "I don't really!")
 
 get started
 ===========
 
 Pull the current code by 
-git clone https://github.com/holla/platypus.git
+
+`git clone https://github.com/holla/platypus.git`
 
 philosophy of development
 =========================
 
 First of all, git is awesome and will save us headache, since we are a team of four, which is reasonably big.
 
-First, learn how merge works with git: http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging
+##Learn how merge works with git
+http://git-scm.com/book/en/Git-Branching-Basic-Branching-and-Merging
 
-It would be best if we could follow this policy loosely: http://nvie.com/posts/a-successful-git-branching-model/
+##Good branching practice
+http://nvie.com/posts/a-successful-git-branching-model/
 
+##What does it mean for us?
 So, (1) if you are adding a small change, pushing to master is fine if you are certain that it will not break stuff, because master branch will always hold a working player. Players will be tagged by version numbers.
 
 (2) if you are developing a big new feature, please create a new branch. Then we all get together and merge it back into master to make sure that nothing breaks.
