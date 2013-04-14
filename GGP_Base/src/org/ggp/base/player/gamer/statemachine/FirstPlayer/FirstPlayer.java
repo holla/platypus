@@ -128,6 +128,13 @@ public class FirstPlayer extends StateMachineGamer{
 				moves = theMachine.getLegalMoves(getCurrentState(), role);
 				/* Default Random Move in case of time-out, etc */
 				playerResult.setBestMoveSoFar(moves.get(new Random().nextInt(moves.size())));
+				MachineState defaultNextState = theMachine.getRandomNextState(currentState, role, playerResult.getBestMoveSoFar());
+				if(theMachine.isTerminal(defaultNextState)){
+					Integer defaultScore = theMachine.getGoal(defaultNextState,role);
+					playerResult.setBestMoveScore(defaultScore);
+				} else{
+					playerResult.setBestMoveScore(0);
+				}
 				
 				/* Adds the first turn's worth of moves to consider */
 				turnsToProcess.add(moves);
@@ -142,7 +149,10 @@ public class FirstPlayer extends StateMachineGamer{
 						/* If the move allows this player to win, take it */
 						if(theMachine.isTerminal(nextState)){
 							Integer myScore = theMachine.getGoal(nextState,role);
-							if(myScore==100) playerResult.setBestMoveSoFar(moveUnderConsideration);
+							if(myScore>playerResult.getBestMoveScore()){
+								playerResult.setBestMoveSoFar(moveUnderConsideration);
+								playerResult.setBestMoveScore(myScore);
+							}
 						}
 					}
 				}
@@ -193,7 +203,7 @@ public class FirstPlayer extends StateMachineGamer{
 	private class PlayerResult{
 		private Move bestMoveSoFar;
 		/* An int 0-100 representing how good the current best move is */
-		private int bestMovePower;
+		private int bestMoveScore;
 		public PlayerResult(){}
 		
 		private synchronized void setBestMoveSoFar(Move move){
@@ -202,11 +212,11 @@ public class FirstPlayer extends StateMachineGamer{
 		private synchronized Move getBestMoveSoFar(){
 			return bestMoveSoFar;
 		}	
-		private void setBestMovePower(int power){
-			bestMovePower = power;
+		private void setBestMoveScore(int score){
+			bestMoveScore = score;
 		}
-		private int getBestMovePower(){
-			return bestMovePower;
+		private int getBestMoveScore(){
+			return bestMoveScore;
 		}
 	}
 	
