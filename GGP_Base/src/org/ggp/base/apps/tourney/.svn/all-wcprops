@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/611/trunk/ggp-base/src/org/ggp/base/apps/tourney
+END
+TourneyManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/tourney/TourneyManager.java
+END
+Tourney.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/611/trunk/ggp-base/src/org/ggp/base/apps/tourney/Tourney.java
+END
+TourneyEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/!svn/ver/573/trunk/ggp-base/src/org/ggp/base/apps/tourney/TourneyEvent.java
+END
+TourneyEventsPanel.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/apps/tourney/TourneyEventsPanel.java
+END

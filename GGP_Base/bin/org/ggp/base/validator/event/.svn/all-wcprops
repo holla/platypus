@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/validator/event
+END
+ValidatorFailureEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/validator/event/ValidatorFailureEvent.java
+END
+ValidatorSuccessEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/505/trunk/ggp-base/src/org/ggp/base/validator/event/ValidatorSuccessEvent.java
+END
