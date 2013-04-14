@@ -21,13 +21,10 @@ import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 
 public class FirstPlayer extends StateMachineGamer{
-	
+
 	private static final String PLAYER_NAME = "First Player";
 
-	
-	public void stateMachineSelectMove(){
-
-	}
+	private List<Move> optimalSequence = null;
 
 	@Override
 	public StateMachine getInitialStateMachine() {
@@ -39,23 +36,61 @@ public class FirstPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
-		// TODO Auto-generated method stub
+		if(getStateMachine().getRoles().size()==1){
+			/* Single-player game, so try to brute force as much as possible */
+			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState(), 0);
+		}
 
 	}
+
+	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+		if(theMachine.isTerminal(start)) {
+			if(theMachine.getGoal(start,getRole())==100){
+				System.out.println("Solved!");
+				return new ArrayList<Move>();
+			} else{
+				/* No optimal state found */
+				return null;
+			}
+		}
+		List<Move> moves = theMachine.getLegalMoves(start, getRole());
+		List<Move> bestMoves = null;
+		for(Move moveUnderConsideration: moves){
+			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration), depth+1);
+			if(partialBest!=null){
+				partialBest.add(moveUnderConsideration);
+				bestMoves = partialBest;
+				break;
+			}
+		}
+		return bestMoves;
+	}
+
 
 	@Override
 	public Move stateMachineSelectMove(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
-		// TODO Auto-generated method stub
-
 		long start = System.currentTimeMillis();
 		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(), getRole());
+		if(getStateMachine().getRoles().size()==1){
+			/* Single-player game */
+			if(optimalSequence!=null){
+				/* Best move is the first move in the sequence */
+				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
+				long stop = System.currentTimeMillis();
+				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
+				return bestMove;
+			}
+
+		}
+
 		
+
 		/* Thread-safe object used to store the best move so far */
 		PlayerResult fullSearchResult = new PlayerResult();
 		Thread infinitePlayer = new Thread(new FullSearchPlayer(fullSearchResult));
-		
+
 		infinitePlayer.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
@@ -95,17 +130,17 @@ public class FirstPlayer extends StateMachineGamer{
 		// TODO Auto-generated method stub
 		return PLAYER_NAME;
 	}
-	
+
 	@Override
 	public DetailPanel getDetailPanel(){
 		return new SimpleDetailPanel();
 	}
-	
+
 	private class FullSearchPlayer implements Runnable{
 		/* The maximum number of levels to which this player will descend looking for moves */
 		private int max_depth;
 		private PlayerResult playerResult;
-		
+
 		public FullSearchPlayer(int max_depth){
 			this.max_depth = max_depth;
 		}
@@ -114,7 +149,7 @@ public class FirstPlayer extends StateMachineGamer{
 			this(Integer.MAX_VALUE);
 			this.playerResult = playerResult;
 		}
-		
+
 		@Override
 		public void run() {
 			List<Move> moves;
@@ -135,10 +170,10 @@ public class FirstPlayer extends StateMachineGamer{
 				} else{
 					playerResult.setBestMoveScore(0);
 				}
-				
+
 				/* Adds the first turn's worth of moves to consider */
 				turnsToProcess.add(moves);
-				
+
 				/* Searches to see if it can win and if so wins */
 				while(true){
 					if(turnsToProcess.isEmpty()) break;
@@ -156,10 +191,10 @@ public class FirstPlayer extends StateMachineGamer{
 						}
 					}
 				}
-				
-				
-				
-				
+
+
+
+
 			} catch (MoveDefinitionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -170,14 +205,14 @@ public class FirstPlayer extends StateMachineGamer{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}		
 	}
-	
+
 	private class InfiniteRandomPlayer implements Runnable{
-		
+
 		private PlayerResult playerResult;
-		
+
 		public InfiniteRandomPlayer(PlayerResult playerResult){
 			this.playerResult = playerResult;
 		}
@@ -195,17 +230,17 @@ public class FirstPlayer extends StateMachineGamer{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}		
 	}
-	
+
 	/* A thread-safe class to communicate results between the main thread and other threads performing computations */
 	private class PlayerResult{
 		private Move bestMoveSoFar;
 		/* An int 0-100 representing how good the current best move is */
 		private int bestMoveScore;
 		public PlayerResult(){}
-		
+
 		private synchronized void setBestMoveSoFar(Move move){
 			bestMoveSoFar = move;
 		}
@@ -219,5 +254,5 @@ public class FirstPlayer extends StateMachineGamer{
 			return bestMoveScore;
 		}
 	}
-	
+
 }
