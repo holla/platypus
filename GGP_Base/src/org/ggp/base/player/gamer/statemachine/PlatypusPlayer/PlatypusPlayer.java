@@ -26,7 +26,7 @@ import players.SingleSearchPlayer;
 
 public class PlatypusPlayer extends StateMachineGamer{
 
-	private static final String PLAYER_NAME = "First Player";
+	private static final String PLAYER_NAME = "Platypus Player";
 
 	private List<Move> optimalSequence = null;
 
