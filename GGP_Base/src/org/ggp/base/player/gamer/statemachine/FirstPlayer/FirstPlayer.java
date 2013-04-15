@@ -1,8 +1,10 @@
 package org.ggp.base.player.gamer.statemachine.FirstPlayer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.ggp.base.apps.player.detail.DetailPanel;
 import org.ggp.base.apps.player.detail.SimpleDetailPanel;
@@ -10,6 +12,7 @@ import org.ggp.base.player.gamer.event.GamerSelectedMoveEvent;
 import org.ggp.base.player.gamer.exception.GameAnalysisException;
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
+import org.ggp.base.util.gdl.grammar.GdlSentence;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
@@ -38,12 +41,13 @@ public class FirstPlayer extends StateMachineGamer{
 			GoalDefinitionException {
 		if(getStateMachine().getRoles().size()==1){
 			/* Single-player game, so try to brute force as much as possible */
-			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState(), 0);
+			Set<Set<GdlSentence>> seenStates = new HashSet<Set<GdlSentence>>();
+			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState(), 0, seenStates);
 		}
 
 	}
 
-	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth, Set<Set<GdlSentence>> seenStates) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
 		if(theMachine.isTerminal(start)) {
 			if(theMachine.getGoal(start,getRole())==100){
 				System.out.println("Solved!");
@@ -53,10 +57,19 @@ public class FirstPlayer extends StateMachineGamer{
 				return null;
 			}
 		}
+		if(seenStates.contains(start.getContents())){
+			return null;
+		}
+		System.out.println(depth);
+		seenStates.add(start.getContents());
+		
 		List<Move> moves = theMachine.getLegalMoves(start, getRole());
 		List<Move> bestMoves = null;
+		
+		
 		for(Move moveUnderConsideration: moves){
-			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration), depth+1);
+		
+			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration), depth+1, seenStates);
 			if(partialBest!=null){
 				partialBest.add(moveUnderConsideration);
 				bestMoves = partialBest;
