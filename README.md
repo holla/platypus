@@ -58,5 +58,5 @@ Routinely do `git clean -fd` because git does not track directories -- just fold
 
 Update this thing quite frequently if you are introducing philosophical changes to the player.
 
-
+Run PlayerPanel, create a copy of your player and an opponent (e.g. Random) and then use the ServerPanel to test!
 
