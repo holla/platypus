@@ -58,5 +58,9 @@ Routinely do `git clean -fd` because git does not track directories -- just fold
 
 Update this thing quite frequently if you are introducing philosophical changes to the player.
 
-Run PlayerPanel, create a copy of your player and an opponent (e.g. Random) and then use the ServerPanel to test!
+#Running players
+TO RUN SUBPLAYERS:
+In the stateMachineSelectMove method of PlatypusPlayer, there is a line of creating and running a thread.  Change the input
+of he thread to take in whatever player you wish to test (the default is a SingleSearchPlayer, which is my old firstPlayer).
 
+Run PlayerPanel, create a copy of your player and an opponent (e.g. Random) and then use the ServerPanel to test!
