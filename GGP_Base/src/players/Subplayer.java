@@ -12,7 +12,5 @@ public abstract class Subplayer implements Runnable{
 	}
 	
 	
-	public abstract void creatingBlah();
-	
 	
 }
