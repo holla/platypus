@@ -44,7 +44,6 @@ public class FirstPlayer extends StateMachineGamer{
 			Set<Set<GdlSentence>> seenStates = new HashSet<Set<GdlSentence>>();
 			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState(), 0, seenStates);
 		}
-
 	}
 
 	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth, Set<Set<GdlSentence>> seenStates) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
