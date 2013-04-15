@@ -40,7 +40,6 @@ public class FirstPlayer extends StateMachineGamer{
 			/* Single-player game, so try to brute force as much as possible */
 			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState(), 0);
 		}
-
 	}
 
 	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
