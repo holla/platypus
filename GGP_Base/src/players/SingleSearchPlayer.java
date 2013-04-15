@@ -16,21 +16,18 @@ public class SingleSearchPlayer extends Subplayer{
 	public SingleSearchPlayer(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState) {
 		super(stateMachine, role, playerResult, currentState);
-		// TODO Auto-generated constructor stub
 	}
-
-	/* The maximum number of levels to which this player will descend looking for moves */
-	private int max_depth;
-	private PlayerResult playerResult;
 
 	@Override
 	public void run() {
 		List<Move> moves;
 		List<List<Move>> turnsToProcess = new ArrayList<List<Move>>();
+		Random random = new Random();
 		try {
 			moves = stateMachine.getLegalMoves(currentState, role);
 			/* Default Random Move in case of time-out, etc */
-			playerResult.setBestMoveSoFar(moves.get(new Random().nextInt(moves.size())));
+			Move defaultMove = moves.get(0);
+			playerResult.setBestMoveSoFar(defaultMove);
 			MachineState defaultNextState = stateMachine.getRandomNextState(currentState, role, playerResult.getBestMoveSoFar());
 			if(stateMachine.isTerminal(defaultNextState)){
 				Integer defaultScore = stateMachine.getGoal(defaultNextState,role);
