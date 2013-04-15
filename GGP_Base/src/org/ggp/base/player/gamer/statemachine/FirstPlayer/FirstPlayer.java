@@ -60,7 +60,6 @@ public class FirstPlayer extends StateMachineGamer{
 		if(seenStates.contains(start.getContents())){
 			return null;
 		}
-		System.out.println(depth);
 		seenStates.add(start.getContents());
 		
 		List<Move> moves = theMachine.getLegalMoves(start, getRole());
