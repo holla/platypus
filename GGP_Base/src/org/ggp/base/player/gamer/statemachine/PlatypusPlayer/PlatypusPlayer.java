@@ -77,17 +77,17 @@ public class PlatypusPlayer extends StateMachineGamer{
 			GoalDefinitionException {
 		long start = System.currentTimeMillis();
 		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(), getRole());
-		if(getStateMachine().getRoles().size()==1){
-			/* Single-player game */
-			if(optimalSequence!=null){
-				/* Best move is the first move in the sequence */
-				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
-				long stop = System.currentTimeMillis();
-				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
-				return bestMove;
-			}
-
-		}
+//		if(getStateMachine().getRoles().size()==1){
+//			/* Single-player game */
+//			if(optimalSequence!=null){
+//				/* Best move is the first move in the sequence */
+//				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
+//				long stop = System.currentTimeMillis();
+//				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
+//				return bestMove;
+//			}
+//
+//		}
 
 		
 		PlayerResult singleSearchPlayerResult = new PlayerResult();
@@ -104,6 +104,11 @@ public class PlatypusPlayer extends StateMachineGamer{
 		/* Tell the thread searching for the best move it is done so it can exit */
 		playerThread.interrupt();
 		Move bestMove = singleSearchPlayerResult.getBestMoveSoFar();
+		System.out.println("Best Move");
+		if (bestMove == null) {
+			bestMove = moves.get(new Random().nextInt(moves.size()));
+			System.out.println("CHOSE RANDOM");
+		}
 		long stop = System.currentTimeMillis();
 
 		notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
