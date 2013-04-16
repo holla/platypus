@@ -20,6 +20,7 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
+import players.MinimaxSubplayer;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
 
@@ -90,9 +91,10 @@ public class PlatypusPlayer extends StateMachineGamer{
 
 		
 		PlayerResult singleSearchPlayerResult = new PlayerResult();
-		Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
-		singleSearchPlayer.start();
+		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
 			Thread.sleep(timeout-start-2000);
@@ -100,7 +102,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 			//e.printStackTrace();
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */
-		singleSearchPlayer.interrupt();
+		playerThread.interrupt();
 		Move bestMove = singleSearchPlayerResult.getBestMoveSoFar();
 		long stop = System.currentTimeMillis();
 
