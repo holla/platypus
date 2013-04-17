@@ -30,11 +30,11 @@ public class MinimaxSubplayer extends Subplayer {
 				if (result > score) {
 					score = result;
 					bestMoveSoFar = move;
+					playerResult.setBestMoveSoFar(bestMoveSoFar);
+					playerResult.setBestMoveScore(score);
 				}
 			}
-			System.out.println("DONE! - " + bestMoveSoFar);
-			playerResult.setBestMoveSoFar(bestMoveSoFar);
-			playerResult.setBestMoveScore(score);
+
 		} catch (MoveDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
