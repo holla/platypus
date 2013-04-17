@@ -35,15 +35,32 @@ So, (1) if you are adding a small change, pushing to master is fine if you are c
 
 (4) Line endings in windows and linux are different, so if you are committing from a windows machine, it will overwrite EVERYTHING. So it would be best if you used UNIX :) If not, then I can show you how to use UNIX line endings.
 
+##How to merge
+You are either developing on `master` or your own `branch` called `whatever`. If you reached a good point where everything works, then 
+you should push to master. To do that
+
+1. `checkout master` 
+* `git pull`
+* If you have some conflicts, it will abort. More on this later... you have to resolve the merge or revert your changes.
+2. `merge whatever`
+3. `git push`
+4.  yay!
+
+To pull latest changes into your own branch,
+1. `checkout master`
+2. `git pull`
+3. `git checkout whatever`
+4. `git merge master`
+
+Routinely do `git clean -fd` because git does not track directories -- just folders, so legacy directories will persist.
+
 ####updating wiki
 
 Update this thing quite frequently if you are introducing philosophical changes to the player.
 
-
+#Running players
 TO RUN SUBPLAYERS:
 In the stateMachineSelectMove method of PlatypusPlayer, there is a line of creating and running a thread.  Change the input
 of he thread to take in whatever player you wish to test (the default is a SingleSearchPlayer, which is my old firstPlayer).
 
 Run PlayerPanel, create a copy of your player and an opponent (e.g. Random) and then use the ServerPanel to test!
-
-

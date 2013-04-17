@@ -20,6 +20,7 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
+import players.MinimaxSubplayer;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
 
@@ -78,6 +79,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 			GoalDefinitionException {
 		long start = System.currentTimeMillis();
 		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(), getRole());
+<<<<<<< HEAD
 		if(getStateMachine().getRoles().size()==1){
 			/* Single-player game */
 			if(optimalSequence!=null){
@@ -90,12 +92,26 @@ public class PlatypusPlayer extends StateMachineGamer{
 			}
 
 		}
+=======
+//		if(getStateMachine().getRoles().size()==1){
+//			/* Single-player game */
+//			if(optimalSequence!=null){
+//				/* Best move is the first move in the sequence */
+//				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
+//				long stop = System.currentTimeMillis();
+//				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
+//				return bestMove;
+//			}
+//
+//		}
+>>>>>>> 83fdf91dec452d45abd9133cc6a69509b190eda5
 
 		
 		PlayerResult singleSearchPlayerResult = new PlayerResult();
-		Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
-		singleSearchPlayer.start();
+		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
 			Thread.sleep(timeout-start-2000);
@@ -103,11 +119,18 @@ public class PlatypusPlayer extends StateMachineGamer{
 			//e.printStackTrace();
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */
-		singleSearchPlayer.interrupt();
+		playerThread.interrupt();
 		Move bestMove = singleSearchPlayerResult.getBestMoveSoFar();
+<<<<<<< HEAD
 		if(bestMove==null){
 			/* choose a default move */
 			bestMove = moves.get(new Random().nextInt(moves.size()));
+=======
+		System.out.println("Best Move");
+		if (bestMove == null) {
+			bestMove = moves.get(new Random().nextInt(moves.size()));
+			System.out.println("CHOSE RANDOM");
+>>>>>>> 83fdf91dec452d45abd9133cc6a69509b190eda5
 		}
 		long stop = System.currentTimeMillis();
 		System.out.println("best move: " + bestMove);
