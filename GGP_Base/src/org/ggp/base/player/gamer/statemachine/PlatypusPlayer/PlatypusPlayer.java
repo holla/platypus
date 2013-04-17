@@ -45,6 +45,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 //			/* Single-player game, so try to brute force as much as possible */
 //			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
 //		}
+
 	}
 	int depth =0;
 	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
