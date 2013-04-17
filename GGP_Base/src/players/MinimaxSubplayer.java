@@ -48,6 +48,7 @@ public class MinimaxSubplayer extends Subplayer {
 	}
 
 	private int minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
 		int score = Integer.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		for (int i = 0; i < jointMoves.size(); i++) {
@@ -64,6 +65,7 @@ public class MinimaxSubplayer extends Subplayer {
 	//consider adding a depth parameter (int depth) to only search tree to a certain depth
 	// and add condition to base case if (depth == maxDepth)
 	private int maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
 		if (stateMachine.isTerminal(state)) {
 			return stateMachine.getGoal(state, role);
 		}
