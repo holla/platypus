@@ -42,11 +42,13 @@ public class PlatypusPlayer extends StateMachineGamer{
 			GoalDefinitionException {
 		if(getStateMachine().getRoles().size()==1){
 			/* Single-player game, so try to brute force as much as possible */
-			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState(), 0);
+			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
 		}
 	}
-
-	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+	int depth =0;
+	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+		depth++;
+		System.out.println(depth);
 		if(theMachine.isTerminal(start)) {
 			if(theMachine.getGoal(start,getRole())==100){
 				System.out.println("Solved!");
@@ -59,7 +61,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		List<Move> moves = theMachine.getLegalMoves(start, getRole());
 		List<Move> bestMoves = null;
 		for(Move moveUnderConsideration: moves){
-			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration), depth+1);
+			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration));
 			if(partialBest!=null){
 				partialBest.add(moveUnderConsideration);
 				bestMoves = partialBest;
@@ -103,6 +105,10 @@ public class PlatypusPlayer extends StateMachineGamer{
 		/* Tell the thread searching for the best move it is done so it can exit */
 		singleSearchPlayer.interrupt();
 		Move bestMove = singleSearchPlayerResult.getBestMoveSoFar();
+		if(bestMove==null){
+			/* choose a default move */
+			bestMove = moves.get(new Random().nextInt(moves.size()));
+		}
 		long stop = System.currentTimeMillis();
 		System.out.println("best move: " + bestMove);
 		notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
