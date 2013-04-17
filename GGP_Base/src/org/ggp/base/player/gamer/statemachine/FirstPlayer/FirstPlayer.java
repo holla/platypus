@@ -25,6 +25,7 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 
+
 public class FirstPlayer extends StateMachineGamer{
 
 	private static final String PLAYER_NAME = "First Player";
@@ -129,6 +130,61 @@ public class FirstPlayer extends StateMachineGamer{
 			}
 		}
 		return bestMoves;
+	}
+	
+	private class GamePath {
+		private MachineState currentState;
+		private ArrayList<Move> moves;
+		public GamePath(MachineState start){
+			currentState = new MachineState(start.getContents());
+			moves = new ArrayList<Move>();
+		}
+		public GamePath(MachineState start, ArrayList<Move> otherMoves){
+			currentState = new MachineState(start.getContents());
+			moves = new ArrayList<Move>(otherMoves);
+		}	
+		public ArrayList<Move> getMoves(){
+			return moves;
+		}	
+		public MachineState getCurrentState(){
+			return currentState;
+		}	
+		public void addMove(Move m){
+			moves.add(m);
+		}
+		
+	}
+	
+	
+	public List<Move> solveSinglePlayerGameBreadthFirst(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+		
+		Queue<GamePath>gameQueue = new LinkedList<GamePath>();
+		gameQueue.add(new GamePath(start));
+
+		while(!gameQueue.isEmpty()){
+			GamePath path = gameQueue.poll();
+						
+			if(theMachine.isTerminal(path.getCurrentState())) {
+				if(theMachine.getGoal(path.getCurrentState(),getRole())==100){
+					System.out.println("Solved!");
+					return path.moves;
+				}else{
+					continue;
+				}
+			}
+
+			List<Move> moves = theMachine.getLegalMoves(path.getCurrentState(), getRole());
+			
+			for(Move moveUnderConsideration: moves){
+				MachineState nextState = theMachine.getRandomNextState(path.getCurrentState(), getRole(), moveUnderConsideration);
+				GamePath nextPath = new GamePath(nextState, path.getMoves());
+				nextPath.addMove(moveUnderConsideration);
+				gameQueue.add(nextPath);
+			}
+				
+		}
+			
+		return null;
 	}
 
 
