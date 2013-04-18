@@ -106,7 +106,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		
 		PlayerResult singleSearchPlayerResult = new PlayerResult();
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
-		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState(),Thread.currentThread()));
+		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
 		playerThread.start();
 		try {
