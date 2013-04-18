@@ -1,6 +1,10 @@
 package players;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
@@ -16,6 +20,8 @@ public class MinimaxSubplayer extends Subplayer {
 		super(stateMachine, role, playerResult, currentState);
 		// TODO Auto-generated constructor stub
 	}
+	Map<MachineState,Integer> memoizedStatesMinValues = new HashMap<MachineState,Integer>();
+	Map<MachineState,Integer> memoizedStatesMaxValues = new HashMap<MachineState,Integer>();
 	
 	@Override
 	public void run() {
@@ -33,6 +39,7 @@ public class MinimaxSubplayer extends Subplayer {
 					playerResult.setBestMoveSoFar(bestMoveSoFar);
 					playerResult.setBestMoveScore(score);
 				}
+				//parentThread.interrupt();
 			}
 
 		} catch (MoveDefinitionException e) {
@@ -46,11 +53,18 @@ public class MinimaxSubplayer extends Subplayer {
 			e.printStackTrace();
 		}
 	}
+	
+	
 
 	private int minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
+		if(memoizedStatesMinValues.containsKey(state)){
+			//System.out.println(state);
+			return memoizedStatesMinValues.get(state);
+		}
 		int score = Integer.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
+		Collections.shuffle(jointMoves);
 		for (int i = 0; i < jointMoves.size(); i++) {
 			List<Move> jointMove = jointMoves.get(i);
 			MachineState newState = stateMachine.getNextState(state, jointMove);
@@ -59,6 +73,7 @@ public class MinimaxSubplayer extends Subplayer {
 				score = result;
 			}
 		}
+		//memoizedStatesMinValues.put(state,score);
 		return score;
 	}
 
@@ -67,16 +82,24 @@ public class MinimaxSubplayer extends Subplayer {
 	private int maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
 		if (stateMachine.isTerminal(state)) {
-			return stateMachine.getGoal(state, role);
+			int goal = stateMachine.getGoal(state,role);
+			memoizedStatesMaxValues.put(state, goal);
+			return goal;
+		}
+		if(memoizedStatesMaxValues.containsKey(state)){
+			//System.out.println("Memoized value!");
+			return memoizedStatesMaxValues.get(state);
 		}
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
 		int score = Integer.MIN_VALUE;
+		Collections.shuffle(moves);
 		for (Move move : moves) {
 			int result = minscore(move, state);
 			if (result > score) {
 				score = result;
 			}
 		}
+		memoizedStatesMaxValues.put(state,score);
 		return score;
 	}
 
