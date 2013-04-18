@@ -1,5 +1,6 @@
 package players;
 
+import java.util.Collections;
 import java.util.List;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -50,6 +51,7 @@ public class MinimaxSubplayer extends Subplayer {
 	private int minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		int score = Integer.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
+		Collections.shuffle(jointMoves);
 		for (int i = 0; i < jointMoves.size(); i++) {
 			List<Move> jointMove = jointMoves.get(i);
 			MachineState newState = stateMachine.getNextState(state, jointMove);
@@ -69,6 +71,7 @@ public class MinimaxSubplayer extends Subplayer {
 		}
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
 		int score = Integer.MIN_VALUE;
+		Collections.shuffle(moves);
 		for (Move move : moves) {
 			int result = minscore(move, state);
 			if (result > score) {
