@@ -16,8 +16,8 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 public class MinimaxSubplayer extends Subplayer {
 
 	public MinimaxSubplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState, Thread parentThread) {
-		super(stateMachine, role, playerResult, currentState, parentThread);
+			PlayerResult playerResult, MachineState currentState) {
+		super(stateMachine, role, playerResult, currentState);
 		// TODO Auto-generated constructor stub
 	}
 	Map<MachineState,Integer> memoizedStatesMinValues = new HashMap<MachineState,Integer>();
