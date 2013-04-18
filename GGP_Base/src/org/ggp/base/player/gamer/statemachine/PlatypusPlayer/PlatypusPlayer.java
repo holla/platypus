@@ -106,13 +106,14 @@ public class PlatypusPlayer extends StateMachineGamer{
 		
 		PlayerResult singleSearchPlayerResult = new PlayerResult();
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
-		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState(),Thread.currentThread()));
 
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
 			Thread.sleep(timeout-start-2000);
 		} catch (InterruptedException e) {
+			System.out.println("Done with subplayer!");
 			//e.printStackTrace();
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */

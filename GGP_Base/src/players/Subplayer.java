@@ -9,12 +9,14 @@ public abstract class Subplayer implements Runnable{
 	Role role;
 	PlayerResult playerResult;
 	MachineState currentState;
+	Thread parentThread;
 	
 	public Subplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState) {
+			PlayerResult playerResult, MachineState currentState, Thread parentThread) {
 		this.stateMachine = stateMachine;
 		this.role = role;
 		this.playerResult = playerResult;
 		this.currentState = currentState;
+		this.parentThread = parentThread;
 	}
 }
