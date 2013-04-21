@@ -24,6 +24,7 @@ import players.MinimaxSubplayer;
 import players.MinimaxSubplayerBoundedDepth;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
+import players.TerminalStateProximity;
 
 
 public class PlatypusPlayer extends StateMachineGamer{
