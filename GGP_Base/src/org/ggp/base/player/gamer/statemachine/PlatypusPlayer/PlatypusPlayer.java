@@ -28,9 +28,10 @@ import players.SingleSearchPlayer;
 
 public class PlatypusPlayer extends StateMachineGamer{
 
-	private static final String PLAYER_NAME = "Platypus Player";
+	private static final String PLAYER_NAME = "Platypus";
 
 	private List<Move> optimalSequence = null;
+	private PlayerResult playerResult = new PlayerResult();
 
 	@Override
 	public StateMachine getInitialStateMachine() {
@@ -42,15 +43,14 @@ public class PlatypusPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
-		//if(getStateMachine().getRoles().size()==1){
-		//	/* Single-player game, so try to brute force as much as possible */
-		//	optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
-		//}
+//		if(getStateMachine().getRoles().size()==1){
+//			/* Single-player game, so try to brute force as much as possible */
+//			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
+//		}
+
 	}
-	int depth =0;
+	
 	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
-		depth++;
-		System.out.println(depth);
 		if(theMachine.isTerminal(start)) {
 			if(theMachine.getGoal(start,getRole())==100){
 				System.out.println("Solved!");
@@ -79,6 +79,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
 		long start = System.currentTimeMillis();
+		playerResult.setBestMoveSoFar(null);
 		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(), getRole());
 		if(getStateMachine().getRoles().size()==1){
 			/* Single-player game */
@@ -105,10 +106,10 @@ public class PlatypusPlayer extends StateMachineGamer{
 //		}
 
 		
-		PlayerResult singleSearchPlayerResult = new PlayerResult();
-		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
-		Thread playerThread = new Thread(new MinimaxSubplayerBoundedDepth(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
+		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+
+		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState()));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
@@ -119,7 +120,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */
 		playerThread.interrupt();
-		Move bestMove = singleSearchPlayerResult.getBestMoveSoFar();
+		Move bestMove = playerResult.getBestMoveSoFar();
 		System.out.println("Best Move");
 		if (bestMove == null) {
 			bestMove = moves.get(new Random().nextInt(moves.size()));

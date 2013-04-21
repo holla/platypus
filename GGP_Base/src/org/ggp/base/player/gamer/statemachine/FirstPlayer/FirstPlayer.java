@@ -47,8 +47,64 @@ public class FirstPlayer extends StateMachineGamer{
 			optimalSequence = solveSinglePlayerGameBreadthFirst(getStateMachine(),getCurrentState(), 0);
 		}
 	}
+	
+	private class GamePath {
+		private MachineState currentState;
+		private ArrayList<Move> moves;
+		public GamePath(MachineState start){
+			currentState = new MachineState(start.getContents());
+			moves = new ArrayList<Move>();
+		}
+		public GamePath(MachineState start, ArrayList<Move> otherMoves){
+			currentState = new MachineState(start.getContents());
+			moves = new ArrayList<Move>(otherMoves);
+		}	
+		public ArrayList<Move> getMoves(){
+			return moves;
+		}	
+		public MachineState getCurrentState(){
+			return currentState;
+		}	
+		public void addMove(Move m){
+			moves.add(m);
+		}
+		
+	}
+	
+	
+	public List<Move> solveSinglePlayerGameBreadthFirst(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+		
+		Queue<GamePath>gameQueue = new LinkedList<GamePath>();
+		gameQueue.add(new GamePath(start));
 
-	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth, Set<Set<GdlSentence>> seenStates) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
+		while(!gameQueue.isEmpty()){
+			GamePath path = gameQueue.poll();
+						
+			if(theMachine.isTerminal(path.getCurrentState())) {
+				if(theMachine.getGoal(path.getCurrentState(),getRole())==100){
+					System.out.println("Solved!");
+					return path.moves;
+				}else{
+					continue;
+				}
+			}
+
+			List<Move> moves = theMachine.getLegalMoves(path.getCurrentState(), getRole());
+			
+			for(Move moveUnderConsideration: moves){
+				MachineState nextState = theMachine.getRandomNextState(path.getCurrentState(), getRole(), moveUnderConsideration);
+				GamePath nextPath = new GamePath(nextState, path.getMoves());
+				nextPath.addMove(moveUnderConsideration);
+				gameQueue.add(nextPath);
+			}
+				
+		}
+			
+		return null;
+	}
+
+
+	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start, int depth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
 		if(theMachine.isTerminal(start)) {
 			if(theMachine.getGoal(start,getRole())==100){
 				System.out.println("Solved!");
@@ -58,10 +114,7 @@ public class FirstPlayer extends StateMachineGamer{
 				return null;
 			}
 		}
-		if(seenStates.contains(start.getContents())){
-			return null;
-		}
-		seenStates.add(start.getContents());
+	
 		
 		List<Move> moves = theMachine.getLegalMoves(start, getRole());
 		List<Move> bestMoves = null;
@@ -69,7 +122,7 @@ public class FirstPlayer extends StateMachineGamer{
 		
 		for(Move moveUnderConsideration: moves){
 		
-			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration), depth+1, seenStates);
+			List<Move> partialBest = solveSinglePlayerGame(theMachine, theMachine.getRandomNextState(start, getRole(), moveUnderConsideration), depth+1);
 			if(partialBest!=null){
 				partialBest.add(moveUnderConsideration);
 				bestMoves = partialBest;
