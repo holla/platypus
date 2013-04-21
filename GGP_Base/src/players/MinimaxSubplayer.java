@@ -20,8 +20,6 @@ public class MinimaxSubplayer extends Subplayer {
 		super(stateMachine, role, playerResult, currentState);
 		// TODO Auto-generated constructor stub
 	}
-	Map<MachineState,Integer> memoizedStatesMinValues = new HashMap<MachineState,Integer>();
-	Map<MachineState,Integer> memoizedStatesMaxValues = new HashMap<MachineState,Integer>();
 	
 	@Override
 	public void run() {
@@ -58,10 +56,6 @@ public class MinimaxSubplayer extends Subplayer {
 
 	private int minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
-		if(memoizedStatesMinValues.containsKey(state)){
-			//System.out.println(state);
-			return memoizedStatesMinValues.get(state);
-		}
 		int score = Integer.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
@@ -83,12 +77,12 @@ public class MinimaxSubplayer extends Subplayer {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
 		if (stateMachine.isTerminal(state)) {
 			int goal = stateMachine.getGoal(state,role);
-			memoizedStatesMaxValues.put(state, goal);
+			playerResult.putMemoizedState(state, goal);
 			return goal;
 		}
-		if(memoizedStatesMaxValues.containsKey(state)){
+		if(playerResult.containsMemoizedState(state)){
 			//System.out.println("Memoized value!");
-			return memoizedStatesMaxValues.get(state);
+			return playerResult.getMemoizedState(state);
 		}
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
 		int score = Integer.MIN_VALUE;
@@ -99,7 +93,9 @@ public class MinimaxSubplayer extends Subplayer {
 				score = result;
 			}
 		}
-		memoizedStatesMaxValues.put(state,score);
+		if(!Thread.currentThread().isInterrupted()){
+			playerResult.putMemoizedState(state,score);
+		}
 		return score;
 	}
 
