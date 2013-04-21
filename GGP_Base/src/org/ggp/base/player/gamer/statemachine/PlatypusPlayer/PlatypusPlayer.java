@@ -21,6 +21,7 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import players.MinimaxSubplayer;
+import players.MinimaxSubplayerBoundedDepth;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
 
@@ -112,8 +113,8 @@ public class PlatypusPlayer extends StateMachineGamer{
 		
 
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
-		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState()));
 
+		Thread playerThread = new Thread(new MinimaxSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState()));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
