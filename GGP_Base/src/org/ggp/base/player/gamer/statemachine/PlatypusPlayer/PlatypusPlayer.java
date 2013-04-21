@@ -31,6 +31,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 
 	private List<Move> optimalSequence = null;
 	private PlayerResult playerResult = new PlayerResult();
+	private TerminalStateProximity terminalStateProximity;
 
 	@Override
 	public StateMachine getInitialStateMachine() {
@@ -42,12 +43,16 @@ public class PlatypusPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
+		terminalStateProximity = new TerminalStateProximity(timeout-2000, getStateMachine(), getCurrentState());
+		
 //		if(getStateMachine().getRoles().size()==1){
 //			/* Single-player game, so try to brute force as much as possible */
 //			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
 //		}
 
 	}
+	
+	
 	
 	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
 		if(theMachine.isTerminal(start)) {

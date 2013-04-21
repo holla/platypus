@@ -7,8 +7,8 @@ import org.ggp.base.util.statemachine.Move;
 
 public class PlayerResult{
 	public Move bestMoveSoFar;
-	/* An int 0-100 representing how good the current best move is */
-	public int bestMoveScore;
+	/* A double 0-100 representing how good the current best move is */
+	public double bestMoveScore;
 	
 	public HashMap<MachineState,Integer> memoizedMachineStates = new HashMap<MachineState,Integer>();
 	
@@ -33,10 +33,10 @@ public class PlayerResult{
 		return memoizedMachineStates.containsKey(state);
 	}
 	
-	public void setBestMoveScore(int score){
+	public void setBestMoveScore(double score){
 		bestMoveScore = score;
 	}
-	public int getBestMoveScore(){
+	public double getBestMoveScore(){
 		return bestMoveScore;
 	}
 }
