@@ -10,7 +10,7 @@ public class PlayerResult{
 	/* A double 0-100 representing how good the current best move is */
 	public double bestMoveScore;
 	
-	public HashMap<MachineState,Integer> memoizedMachineStates = new HashMap<MachineState,Integer>();
+	public HashMap<MachineState,Double> memoizedMachineStates = new HashMap<MachineState,Double>();
 	
 	public PlayerResult(){}
 
@@ -21,11 +21,11 @@ public class PlayerResult{
 		return bestMoveSoFar;
 	}	
 	
-	public synchronized void putMemoizedState(MachineState state, Integer value){
+	public synchronized void putMemoizedState(MachineState state, Double value){
 		memoizedMachineStates.put(state, value);
 	}
 	
-	public synchronized Integer getMemoizedState(MachineState state){
+	public synchronized Double getMemoizedState(MachineState state){
 		return memoizedMachineStates.get(state);
 	}
 	

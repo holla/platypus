@@ -16,11 +16,12 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 public class MinimaxProximitySubplayer extends Subplayer {
 
 	private TerminalStateProximity terminalStateProximity;
-	
+	private int maxDepth;
 	public MinimaxProximitySubplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState, TerminalStateProximity terminalStateProximity) {
+			PlayerResult playerResult, MachineState currentState, TerminalStateProximity terminalStateProximity, int maxDepth) {
 		super(stateMachine, role, playerResult, currentState);
 		this.terminalStateProximity = terminalStateProximity;
+		this.maxDepth = maxDepth;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -28,11 +29,11 @@ public class MinimaxProximitySubplayer extends Subplayer {
 	public void run() {
 		try {
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
-			int score = Integer.MIN_VALUE;
+			double score = Double.NEGATIVE_INFINITY;
 			Move bestMoveSoFar = null;
 			for (Move move : moves) {
 				if (Thread.currentThread().isInterrupted()) return;
-				int result = minscore(move, currentState);
+				double result = minscore(move, currentState, 1);
 				System.out.println("MOVE: " + move + ", result: " + result);
 				if (result > score) {
 					score = result;
@@ -57,15 +58,15 @@ public class MinimaxProximitySubplayer extends Subplayer {
 	
 	
 
-	private int minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
-		int score = Integer.MAX_VALUE;
+	private double minscore(Move move, MachineState state, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if(Thread.currentThread().isInterrupted()) return Double.POSITIVE_INFINITY;
+		double score = Double.POSITIVE_INFINITY;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
 		for (int i = 0; i < jointMoves.size(); i++) {
 			List<Move> jointMove = jointMoves.get(i);
 			MachineState newState = stateMachine.getNextState(state, jointMove);
-			int result = maxscore(newState);
+			double result = maxscore(newState, currentDepth);
 			if (result < score) {
 				score = result;
 			}
@@ -76,22 +77,21 @@ public class MinimaxProximitySubplayer extends Subplayer {
 
 	//consider adding a depth parameter (int depth) to only search tree to a certain depth
 	// and add condition to base case if (depth == maxDepth)
-	private int maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
-		if (stateMachine.isTerminal(state)) {
-			int goal = stateMachine.getGoal(state,role);
-			playerResult.putMemoizedState(state, goal);
-			return goal;
+	private double maxscore(MachineState state, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if(Thread.currentThread().isInterrupted()) return Double.NEGATIVE_INFINITY;
+		if (stateMachine.isTerminal(state) || currentDepth == maxDepth) {
+			double stateHeuristic = terminalStateProximity.evaluateState(state);
+			return stateHeuristic;
 		}
 		if(playerResult.containsMemoizedState(state)){
 			//System.out.println("Memoized value!");
 			return playerResult.getMemoizedState(state);
 		}
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
-		int score = Integer.MIN_VALUE;
+		double score = Double.NEGATIVE_INFINITY;
 		Collections.shuffle(moves);
 		for (Move move : moves) {
-			int result = minscore(move, state);
+			double result = minscore(move, state, currentDepth+1);
 			if (result > score) {
 				score = result;
 			}
