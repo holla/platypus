@@ -22,7 +22,7 @@ import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
-import players.MinimaxSubplayerBoundedDepth;
+import players.MinimaxSubplayerBoundedDepthMobility;
 import players.MinimaxSubplayerFocus;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
@@ -47,7 +47,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
-		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
+		//terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
 		
 //		if(getStateMachine().getRoles().size()==1){
 //			/* Single-player game, so try to brute force as much as possible */
@@ -118,7 +118,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
 
-		Thread playerThread = new Thread(new MinimaxSubplayerBoundedDepth(getStateMachine(), getRole(), playerResult,getCurrentState()));
+		Thread playerThread = new Thread(new MinimaxSubplayerBoundedDepthMobility(getStateMachine(), getRole(), playerResult,getCurrentState()));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
