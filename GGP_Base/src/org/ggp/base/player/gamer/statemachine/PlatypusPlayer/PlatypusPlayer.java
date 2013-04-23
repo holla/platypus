@@ -23,6 +23,7 @@ import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
 import players.MinimaxSubplayerBoundedDepth;
+import players.MinimaxSubplayerFocus;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
 import players.TerminalStateProximity;
@@ -46,7 +47,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
-		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState());
+		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
 		
 //		if(getStateMachine().getRoles().size()==1){
 //			/* Single-player game, so try to brute force as much as possible */
@@ -116,7 +117,8 @@ public class PlatypusPlayer extends StateMachineGamer{
 
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
-		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6));
+
+		Thread playerThread = new Thread(new MinimaxSubplayerBoundedDepth(getStateMachine(), getRole(), playerResult,getCurrentState()));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
@@ -128,7 +130,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		/* Tell the thread searching for the best move it is done so it can exit */
 		playerThread.interrupt();
 		Move bestMove = playerResult.getBestMoveSoFar();
-		System.out.println("Best Move");
+		System.out.println("--------Best Move--------");
 		if (bestMove == null) {
 			bestMove = moves.get(new Random().nextInt(moves.size()));
 			System.out.println("CHOSE RANDOM");

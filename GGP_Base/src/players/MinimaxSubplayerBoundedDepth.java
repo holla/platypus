@@ -37,6 +37,7 @@ public class MinimaxSubplayerBoundedDepth extends Subplayer {
 					System.out.println("MOVE: " + move + ", result: " + result);
 					if (result > score) {
 						score = result;
+						System.out.println("best move so far: "+ move);
 						bestMoveSoFar = move;
 						playerResult.setBestMoveSoFar(bestMoveSoFar);
 						playerResult.setBestMoveScore(score);
@@ -97,16 +98,17 @@ public class MinimaxSubplayerBoundedDepth extends Subplayer {
 		return score;
 	}
 	
-	private int evalFn(MachineState state, Role role) throws GoalDefinitionException {
-		if (memoizedStatesMaxValues.containsKey(state)) {
-			return memoizedStatesMaxValues.get(state);
-		}
+	private int evalFn(MachineState state, Role role) throws GoalDefinitionException, MoveDefinitionException {
+//		if (memoizedStatesMaxValues.containsKey(state)) {
+//			return memoizedStatesMaxValues.get(state);
+//		}
 		if (stateMachine.isTerminal(state)) {
 			int goal = stateMachine.getGoal(state,role);
 			return goal; 
 		} else {
-			return 0;
+			return stateMachine.getLegalMoves(state, role).size();
 		}
+		
 	}
 
 }
