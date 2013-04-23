@@ -47,16 +47,16 @@ public class PlatypusPlayer extends StateMachineGamer{
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
 		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
-		
-//		if(getStateMachine().getRoles().size()==1){
-//			/* Single-player game, so try to brute force as much as possible */
-//			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
-//		}
+
+		//		if(getStateMachine().getRoles().size()==1){
+		//			/* Single-player game, so try to brute force as much as possible */
+		//			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
+		//		}
 
 	}
-	
-	
-	
+
+
+
 	public List<Move> solveSinglePlayerGame(StateMachine theMachine, MachineState start) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException{
 		if(theMachine.isTerminal(start)) {
 			if(theMachine.getGoal(start,getRole())==100){
@@ -88,35 +88,30 @@ public class PlatypusPlayer extends StateMachineGamer{
 		long start = System.currentTimeMillis();
 		playerResult.setBestMoveSoFar(null);
 		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(), getRole());
-		if(getStateMachine().getRoles().size()==1){
-			/* Single-player game */
-			if(optimalSequence!=null){
-				/* Best move is the first move in the sequence */
-				System.out.println("Single Player!");
-				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
-				long stop = System.currentTimeMillis();
-				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
-				return bestMove;
-			}
-
+		if(moves.size()==1){
+			Move bestMove = moves.get(0);
+			long stop = System.currentTimeMillis();
+			notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
+			return bestMove;
 		}
-//		if(getStateMachine().getRoles().size()==1){
-//			/* Single-player game */
-//			if(optimalSequence!=null){
-//				/* Best move is the first move in the sequence */
-//				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
-//				long stop = System.currentTimeMillis();
-//				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
-//				return bestMove;
-//			}
-//
-//		}
-
 		
+		//		if(getStateMachine().getRoles().size()==1){
+		//			/* Single-player game */
+		//			if(optimalSequence!=null){
+		//				/* Best move is the first move in the sequence */
+		//				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
+		//				long stop = System.currentTimeMillis();
+		//				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
+		//				return bestMove;
+		//			}
+		//
+		//		}
+
+
 
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
-		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6));
+		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */

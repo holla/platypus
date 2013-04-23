@@ -10,6 +10,7 @@ public class PlayerResult{
 	/* A double 0-100 representing how good the current best move is */
 	public double bestMoveScore;
 	
+	public HashMap<MachineState,Integer> memoizedMachineStateGoals = new HashMap<MachineState,Integer>();
 	public HashMap<MachineState,Double> memoizedMachineStates = new HashMap<MachineState,Double>();
 	
 	public PlayerResult(){}
@@ -33,10 +34,22 @@ public class PlayerResult{
 		return memoizedMachineStates.containsKey(state);
 	}
 	
-	public void setBestMoveScore(double score){
+	public synchronized void setBestMoveScore(double score){
 		bestMoveScore = score;
 	}
-	public double getBestMoveScore(){
+	public synchronized double getBestMoveScore(){
 		return bestMoveScore;
+	}
+	
+	public synchronized int getMemoizedStateGoal(MachineState state){
+		return memoizedMachineStateGoals.get(state);
+	}
+	
+	public synchronized void putMemoizedStateGoal(MachineState state, int goal){
+		memoizedMachineStateGoals.put(state,goal);
+	}
+	
+	public synchronized boolean containsMemoizedStateGoal(MachineState state){
+		return memoizedMachineStateGoals.containsKey(state);
 	}
 }
