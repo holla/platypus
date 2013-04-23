@@ -7,7 +7,9 @@ import java.util.Set;
 
 import org.ggp.base.util.gdl.grammar.GdlSentence;
 import org.ggp.base.util.statemachine.MachineState;
+import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
+import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
@@ -16,14 +18,16 @@ public class TerminalStateProximity {
 	private static final double MONTECARLO_TIMEREMAINING = 5000+COUNTS_TIMEREMAINING;
 	private StateMachine stateMachine;
 	private MachineState initialState;
-	private Map<GdlSentence, Integer> terminalSentenceCounts = new HashMap<GdlSentence, Integer>();
+	private Map<GdlSentence, Double> terminalSentenceCounts = new HashMap<GdlSentence, Double>();
 	private int numberTerminalStates;
-	int numberGdlSentences;
+	private int numberGdlSentences;
+	private Role role;
 
 	/* @param timeout the system time by which it must be done */
-	public TerminalStateProximity(long timeout, StateMachine stateMachine, MachineState initialState) throws MoveDefinitionException, TransitionDefinitionException{
+	public TerminalStateProximity(long timeout, StateMachine stateMachine, MachineState initialState, Role role) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
 		this.stateMachine = stateMachine;
 		this.initialState = initialState;
+		this.role = role;
 
 		/* temporary */
 		long terminationTimeLimit = timeout-(long)MONTECARLO_TIMEREMAINING;
@@ -38,18 +42,21 @@ public class TerminalStateProximity {
 
 	/**
 	 * Uses Monte-Carlo simulation to generate random states until it finds terminal ones; starts from initialstate at each point
+	 * Uses the goal value of each terminal state rescaled to the range -1 to 1 to add to the "value" of each state
 	 * @param finishTime the time at which this method stops generating random terminal states
 	 * @return a set containing randomly generate terminal state
 	 * @throws TransitionDefinitionException 
 	 * @throws MoveDefinitionException 
+	 * @throws GoalDefinitionException 
 	 */
-	private Set<MachineState> generateRandomTerminalStates(long finishTime) throws MoveDefinitionException, TransitionDefinitionException{
+	private Set<MachineState> generateRandomTerminalStates(long finishTime) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
 		Set<MachineState> terminalStates = new HashSet<MachineState>();
 		while(System.currentTimeMillis()<finishTime){
 			MachineState currentState = initialState;
 			while(!stateMachine.isTerminal(currentState) && System.currentTimeMillis()<finishTime){
 				currentState = stateMachine.getRandomNextState(currentState);
 			}
+			System.out.println(stateMachine.getGoal(currentState,role));
 			if(System.currentTimeMillis()<finishTime)
 				terminalStates.add(currentState);
 		}
@@ -61,15 +68,17 @@ public class TerminalStateProximity {
 	 * For each sentence that appears in a terminal state, counts the number of times it appears in the given terminal states
 	 * @param terminalStates sample of terminal states to count GDL sentences in
 	 * @return a map from GDL sentences to the number of times they occur in the terminal states
+	 * @throws GoalDefinitionException 
 	 */
-	private Map<GdlSentence,Integer> generateTerminalSentenceCounts(Set<MachineState> terminalStates){
-		Map<GdlSentence, Integer> sentenceCounts = new HashMap<GdlSentence,Integer>();
+	private Map<GdlSentence,Double> generateTerminalSentenceCounts(Set<MachineState> terminalStates) throws GoalDefinitionException{
+		Map<GdlSentence, Double> sentenceCounts = new HashMap<GdlSentence,Double>();
 		for(MachineState state : terminalStates){
+			int goal = stateMachine.getGoal(state, role);
 			for(GdlSentence sentence : state.getContents()){
 				if(sentenceCounts.containsKey(sentence)){
 					sentenceCounts.put(sentence, sentenceCounts.get(sentence)+1);
 				} else{
-					sentenceCounts.put(sentence, 1);
+					sentenceCounts.put(sentence, 1.0);
 				}
 			}
 		}
@@ -87,7 +96,7 @@ public class TerminalStateProximity {
 		double heuristic = 0;
 		for(GdlSentence sentence : state.getContents()){
 			if(terminalSentenceCounts.containsKey(sentence))
-				heuristic+=terminalSentenceCounts.get(sentence)*100/(double)numberGdlSentences/(double)numberTerminalStates;
+				heuristic+=terminalSentenceCounts.get(sentence)*100/(double)numberTerminalStates;
 		}
 		//if(heuristic!=0)
 		//System.out.println(heuristic);
