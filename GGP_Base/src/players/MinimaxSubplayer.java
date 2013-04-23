@@ -25,11 +25,11 @@ public class MinimaxSubplayer extends Subplayer {
 	public void run() {
 		try {
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
-			int score = Integer.MIN_VALUE;
+			double score = Integer.MIN_VALUE;
 			Move bestMoveSoFar = null;
 			for (Move move : moves) {
 				if (Thread.currentThread().isInterrupted()) return;
-				int result = minscore(move, currentState);
+				double result = minscore(move, currentState);
 				System.out.println("MOVE: " + move + ", result: " + result);
 				if (result > score) {
 					score = result;
@@ -54,15 +54,15 @@ public class MinimaxSubplayer extends Subplayer {
 	
 	
 
-	private int minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+	private double minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
-		int score = Integer.MAX_VALUE;
+		double score = Double.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
 		for (int i = 0; i < jointMoves.size(); i++) {
 			List<Move> jointMove = jointMoves.get(i);
 			MachineState newState = stateMachine.getNextState(state, jointMove);
-			int result = maxscore(newState);
+			double result = maxscore(newState);
 			if (result < score) {
 				score = result;
 			}
@@ -73,11 +73,11 @@ public class MinimaxSubplayer extends Subplayer {
 
 	//consider adding a depth parameter (int depth) to only search tree to a certain depth
 	// and add condition to base case if (depth == maxDepth)
-	private int maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+	private double maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
 		if (stateMachine.isTerminal(state)) {
 			int goal = stateMachine.getGoal(state,role);
-			playerResult.putMemoizedState(state, goal);
+			playerResult.putMemoizedState(state, new Double(goal));
 			return goal;
 		}
 		if(playerResult.containsMemoizedState(state)){
@@ -85,16 +85,16 @@ public class MinimaxSubplayer extends Subplayer {
 			return playerResult.getMemoizedState(state);
 		}
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
-		int score = Integer.MIN_VALUE;
+		double score = Integer.MIN_VALUE;
 		Collections.shuffle(moves);
 		for (Move move : moves) {
-			int result = minscore(move, state);
+			double result = minscore(move, state);
 			if (result > score) {
 				score = result;
 			}
 		}
 		if(!Thread.currentThread().isInterrupted()){
-			playerResult.putMemoizedState(state,score);
+			playerResult.putMemoizedState(state,new Double(score));
 		}
 		return score;
 	}
