@@ -14,7 +14,7 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
-
+/*** NOT TESTED ***/
 
 public class NMobilitySubplayer extends Subplayer{
 	
