@@ -118,7 +118,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
 
-		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6));
+		Thread playerThread = new Thread(new MinimaxSubplayerBoundedDepth(getStateMachine(), getRole(), playerResult,getCurrentState()));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
@@ -130,7 +130,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		/* Tell the thread searching for the best move it is done so it can exit */
 		playerThread.interrupt();
 		Move bestMove = playerResult.getBestMoveSoFar();
-		System.out.println("Best Move");
+		System.out.println("--------Best Move--------");
 		if (bestMove == null) {
 			bestMove = moves.get(new Random().nextInt(moves.size()));
 			System.out.println("CHOSE RANDOM");
