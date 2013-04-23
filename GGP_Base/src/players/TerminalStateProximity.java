@@ -56,7 +56,7 @@ public class TerminalStateProximity {
 			while(!stateMachine.isTerminal(currentState) && System.currentTimeMillis()<finishTime){
 				currentState = stateMachine.getRandomNextState(currentState);
 			}
-			System.out.println(stateMachine.getGoal(currentState,role));
+			//System.out.println(stateMachine.getGoal(currentState,role));
 			if(System.currentTimeMillis()<finishTime)
 				terminalStates.add(currentState);
 		}
@@ -76,9 +76,9 @@ public class TerminalStateProximity {
 			int goal = stateMachine.getGoal(state, role);
 			for(GdlSentence sentence : state.getContents()){
 				if(sentenceCounts.containsKey(sentence)){
-					sentenceCounts.put(sentence, sentenceCounts.get(sentence)+1);
+					sentenceCounts.put(sentence, sentenceCounts.get(sentence)+(goal-50.0)/50);
 				} else{
-					sentenceCounts.put(sentence, 1.0);
+					sentenceCounts.put(sentence, (goal-50.0)/50);
 				}
 			}
 		}

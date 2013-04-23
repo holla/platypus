@@ -18,30 +18,32 @@ public class MinimaxProximitySubplayer extends Subplayer {
 	private TerminalStateProximity terminalStateProximity;
 	private int maxDepth;
 	public MinimaxProximitySubplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState, TerminalStateProximity terminalStateProximity, int maxDepth) {
+			PlayerResult playerResult, MachineState currentState, TerminalStateProximity terminalStateProximity) {
 		super(stateMachine, role, playerResult, currentState);
 		this.terminalStateProximity = terminalStateProximity;
-		this.maxDepth = maxDepth;
-		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
 	public void run() {
 		try {
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
 			double score = Double.NEGATIVE_INFINITY;
 			Move bestMoveSoFar = null;
-			for (Move move : moves) {
-				if (Thread.currentThread().isInterrupted()) return;
-				double result = minscore(move, currentState, 1);
-				System.out.println("MOVE: " + move + ", result: " + result);
-				if (result > score) {
-					score = result;
-					bestMoveSoFar = move;
-					playerResult.setBestMoveSoFar(bestMoveSoFar);
-					playerResult.setBestMoveScore(score);
+			maxDepth = 1;
+			while(true){
+				for (Move move : moves) {
+					if (Thread.currentThread().isInterrupted()) return;
+					double result = minscore(move, currentState, 1);
+					System.out.println("MOVE: " + move + ", result: " + result + ", depth: " + maxDepth);
+					if (result > score) {
+						score = result;
+						bestMoveSoFar = move;
+						playerResult.setBestMoveSoFar(bestMoveSoFar);
+						playerResult.setBestMoveScore(score);
+					}
+					//parentThread.interrupt();
 				}
-				//parentThread.interrupt();
+				maxDepth++;
 			}
 
 		} catch (MoveDefinitionException e) {
@@ -55,8 +57,8 @@ public class MinimaxProximitySubplayer extends Subplayer {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 
 	private double minscore(Move move, MachineState state, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Double.POSITIVE_INFINITY;
