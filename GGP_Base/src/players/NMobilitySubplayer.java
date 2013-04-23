@@ -38,6 +38,7 @@ public class NMobilitySubplayer extends Subplayer{
 	@Override
 	public void run() {
 		try {
+			int maxDepth = 1;
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
 			double score = Integer.MIN_VALUE;
 			Move bestMoveSoFar = null;
@@ -46,6 +47,7 @@ public class NMobilitySubplayer extends Subplayer{
 				double result = minscore(move, currentState);
 				System.out.println("MOVE: " + move + ", result: " + result);
 				if (result > score) {
+					System.out.println("Updating to "+move);
 					score = result;
 					bestMoveSoFar = move;
 					playerResult.setBestMoveSoFar(bestMoveSoFar);
@@ -69,7 +71,7 @@ public class NMobilitySubplayer extends Subplayer{
 	
 
 	private double minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
+		if(Thread.currentThread().isInterrupted()) return Double.MAX_VALUE;
 		double score = Double.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
@@ -114,7 +116,8 @@ public class NMobilitySubplayer extends Subplayer{
 	
 	
 	public double normalizeNumber(double num){
-		return (1.0 - (1.0 / num));
+		//return (1.0 - (1.0 / num));
+		return num;
 	}
 	
 	public double getMobilityNormalized(MachineState state, Role role, int n, HashSet<MachineState> set){
