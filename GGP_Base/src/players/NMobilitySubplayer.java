@@ -28,8 +28,9 @@ public class NMobilitySubplayer extends Subplayer{
 //	}
 	
 	
-	public static HashMap<MachineState, Integer> neighborsCache = new HashMap<MachineState, Integer>();
-	
+	Map<MachineState,Double> memoizedStatesMinValues = new HashMap<MachineState,Double>();
+	Map<MachineState,Double> memoizedStatesMaxValues = new HashMap<MachineState,Double>();
+
 	public NMobilitySubplayer(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState) {
 		super(stateMachine, role, playerResult, currentState);
@@ -42,20 +43,22 @@ public class NMobilitySubplayer extends Subplayer{
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
 			double score = Integer.MIN_VALUE;
 			Move bestMoveSoFar = null;
-			for (Move move : moves) {
-				if (Thread.currentThread().isInterrupted()) return;
-				double result = minscore(move, currentState);
-				System.out.println("MOVE: " + move + ", result: " + result);
-				if (result > score) {
-					System.out.println("Updating to "+move);
-					score = result;
-					bestMoveSoFar = move;
-					playerResult.setBestMoveSoFar(bestMoveSoFar);
-					playerResult.setBestMoveScore(score);
+			while(true){
+				for (Move move : moves) {
+					if (Thread.currentThread().isInterrupted()) return;
+					double result = minscore(move, currentState, maxDepth, maxDepth-1);
+					System.out.println("MOVE: " + move + ", result: " + result);
+					if (result > score) {
+						System.out.println("Updating to "+move);
+						score = result;
+						bestMoveSoFar = move;
+						playerResult.setBestMoveSoFar(bestMoveSoFar);
+						playerResult.setBestMoveScore(score);
+					}
+					//parentThread.interrupt();
 				}
-				//parentThread.interrupt();
+				maxDepth++;
 			}
-
 		} catch (MoveDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,15 +73,21 @@ public class NMobilitySubplayer extends Subplayer{
 	
 	
 
-	private double minscore(Move move, MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(Thread.currentThread().isInterrupted()) return Double.MAX_VALUE;
+	private double minscore(Move move, MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if(memoizedStatesMinValues.containsKey(state)){
+			//System.out.println(state);
+			return memoizedStatesMinValues.get(state);
+		}
+		
+		//if(Thread.currentThread().isInterrupted()) return Double.MAX_VALUE;
+		
 		double score = Double.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
 		for (int i = 0; i < jointMoves.size(); i++) {
 			List<Move> jointMove = jointMoves.get(i);
 			MachineState newState = stateMachine.getNextState(state, jointMove);
-			double result = maxscore(newState);
+			double result = maxscore(newState, maxDepth, currentDepth);
 			if (result < score) {
 				score = result;
 			}
@@ -89,29 +98,31 @@ public class NMobilitySubplayer extends Subplayer{
 
 	//consider adding a depth parameter (int depth) to only search tree to a certain depth
 	// and add condition to base case if (depth == maxDepth)
-	private double maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
-		if (stateMachine.isTerminal(state)) {
-			double goal = getMobilityNormalized(state, role, 2);
-			return goal;
+	private double maxscore(MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if (currentDepth == maxDepth || stateMachine.isTerminal(state)){
+			return evalFn(state,role);
 		}
-		if(playerResult.containsMemoizedState(state)){
-			//System.out.println("Memoized value!");
-			return playerResult.getMemoizedState(state);
-		}
+		
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
-		double score = Integer.MIN_VALUE;
+		double score = Double.MIN_VALUE;
 		Collections.shuffle(moves);
 		for (Move move : moves) {
-			double result = minscore(move, state);
+			double result = minscore(move, state, maxDepth, currentDepth+1);
 			if (result > score) {
 				score = result;
 			}
 		}
-		if(!Thread.currentThread().isInterrupted()){
-			playerResult.putMemoizedState(state,new Double(score));
-		}
+		memoizedStatesMaxValues.put(state,new Double(score));
+		
 		return score;
+	}
+	
+	private double evalFn(MachineState state, Role role) throws GoalDefinitionException, MoveDefinitionException{
+		if (stateMachine.isTerminal(state)){
+			return stateMachine.getGoal(state,role);
+		}else{
+			return getMobilityNormalized(state, role, 2);
+		}
 	}
 	
 	
