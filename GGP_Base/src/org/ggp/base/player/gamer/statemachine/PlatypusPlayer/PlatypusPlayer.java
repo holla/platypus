@@ -20,11 +20,13 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
+import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
 import players.MinimaxSubplayerBoundedDepth;
 import players.MinimaxSubplayerFocus;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
+import players.TerminalStateProximity;
 
 
 public class PlatypusPlayer extends StateMachineGamer{
@@ -115,8 +117,8 @@ public class PlatypusPlayer extends StateMachineGamer{
 
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
-		Thread playerThread = new Thread(new MinimaxSubplayerFocus(getStateMachine(), getRole(), playerResult,getCurrentState()));
 
+		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
