@@ -1,9 +1,9 @@
 package players;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -13,9 +13,9 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
-public class AlphaBetaSubplayer extends Subplayer {
+public class MinimaxSubplayerBoundedDepthMobility extends Subplayer {
 
-	public AlphaBetaSubplayer(StateMachine stateMachine, Role role,
+	public MinimaxSubplayerBoundedDepthMobility(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState) {
 		super(stateMachine, role, playerResult, currentState);
 		// TODO Auto-generated constructor stub
@@ -31,9 +31,7 @@ public class AlphaBetaSubplayer extends Subplayer {
 			while (true) {
 				for (Move move : moves) {
 					if (Thread.currentThread().isInterrupted()) return;
-					double alpha = Double.MIN_VALUE;
-					double beta = Double.MAX_VALUE;
-					double result = minscore(move, currentState, maxDepth, maxDepth-1, alpha, beta);
+					double result = minscore(move, currentState, maxDepth, maxDepth-1);
 					System.out.println("MOVE: " + move + ", result: " + result);
 					if (result > score) {
 						score = result;
@@ -61,23 +59,22 @@ public class AlphaBetaSubplayer extends Subplayer {
 
 
 
-	private double minscore(Move move, MachineState state, int maxDepth, int currentDepth, double alpha, double beta) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+	private double minscore(Move move, MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		double score = Double.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
 		for (int i = 0; i < jointMoves.size(); i++) {
 			List<Move> jointMove = jointMoves.get(i);
 			MachineState newState = stateMachine.getNextState(state, jointMove);
-			score = Math.min(score, maxscore(newState, maxDepth, currentDepth, alpha, beta));
-			if (score <= alpha) {
-				return score;
+			double result = maxscore(newState, maxDepth, currentDepth);
+			if (result < score) {
+				score = result;
 			}
-			beta = Math.min(beta, score);
 		}
 		return score;
 	}
 
-	private double maxscore(MachineState state, int maxDepth, int currentDepth, double alpha, double beta) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+	private double maxscore(MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if (playerResult.containsMemoizedState(state)) {
 			return playerResult.getMemoizedState(state);
 		}
@@ -88,12 +85,10 @@ public class AlphaBetaSubplayer extends Subplayer {
 		double score = Double.MIN_VALUE;
 		Collections.shuffle(moves);
 		for (Move move : moves) {
-			score = Math.max(score, minscore(move, state, maxDepth, currentDepth+1, alpha, beta));
-			if (score >= beta) {
-				playerResult.putMemoizedState(state, score);
-				return score;
+			double result = minscore(move, state, maxDepth, currentDepth+1);
+			if (result > score) {
+				score = result;
 			}
-			alpha = Math.max(alpha, score);
 		}
 		playerResult.putMemoizedState(state, score);
 		return score;

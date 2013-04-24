@@ -90,7 +90,7 @@ public class NMobilitySubplayer extends Subplayer{
 	private double maxscore(MachineState state) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
 		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
 		if (stateMachine.isTerminal(state)) {
-			double goal = getMobilityNormalized(state, role, 2);
+			double goal = Heuristic.getNMobilityNormalized(stateMachine, state, role, 2);
 			return goal;
 		}
 		if(playerResult.containsMemoizedState(state)){
@@ -110,57 +110,5 @@ public class NMobilitySubplayer extends Subplayer{
 			playerResult.putMemoizedState(state,new Double(score));
 		}
 		return score;
-	}
-	
-	
-	public double normalizeNumber(double num){
-		return (1.0 - (1.0 / num));
-	}
-	
-	public double getMobilityNormalized(MachineState state, Role role, int n, HashSet<MachineState> set){
-		return normalizeNumber(getMobility(state, role, n, set));
-	}
-	
-	public double getMobilityNormalized(MachineState state, Role role, int n){
-		return normalizeNumber(getMobility(state, role, n, new HashSet<MachineState>()));
-	}
-	
-	/* Return number of states that the current role  can end up in after n turns */
-	
-	public double getMobility(MachineState state, Role role, int n, HashSet<MachineState> reachedStates){
-		try {
-		if (reachedStates.contains(state)){
-			return 0;
-		}	
-		else if (n <= 0){
-			return 0;
-		}
-		else if (n==1){
-			return stateMachine.getLegalMoves(state,role).size();	
-		}
-		List<Move> moves = stateMachine.getLegalMoves(state, role);
-		Map<Move, List<MachineState> > nextStates = stateMachine.getNextStates(state, role);
-		int totalNumberOfMoves = 0;
-		for (Move move : moves){
-			List<MachineState> possibleNextStates = nextStates.get(move);
-			for (MachineState nextState: possibleNextStates){
-				totalNumberOfMoves += getMobility(nextState, role, n-1, reachedStates);
-			}
-		}
-		return totalNumberOfMoves;
-		
-		} catch (MoveDefinitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransitionDefinitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-		
-		
-		
-		
-	}
-	
+	}	
 }
