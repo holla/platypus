@@ -47,7 +47,8 @@ public class Heuristic {
 	 * NMobility
 	 */
 	private static double normalizeNumber(double num){
-		return (1.0 - (1.0 / num));
+		return num;
+		//return (1.0 - (1.0 / num));
 	}
 	
 	public static double getNMobilityNormalized(StateMachine stateMachine, MachineState state, Role role, int n, HashSet<MachineState> set){
