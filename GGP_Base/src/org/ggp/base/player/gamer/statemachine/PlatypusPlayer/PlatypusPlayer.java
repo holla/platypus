@@ -96,21 +96,6 @@ public class PlatypusPlayer extends StateMachineGamer{
 			return bestMove;
 		}
 		
-		//		if(getStateMachine().getRoles().size()==1){
-		//			/* Single-player game */
-		//			if(optimalSequence!=null){
-		//				/* Best move is the first move in the sequence */
-		//				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
-		//				long stop = System.currentTimeMillis();
-		//				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
-		//				return bestMove;
-		//			}
-		//
-		//		}
-
-
-
-		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
 		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity));
 		playerThread.start();
