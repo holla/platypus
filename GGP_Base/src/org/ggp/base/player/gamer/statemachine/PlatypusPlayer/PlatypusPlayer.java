@@ -20,10 +20,11 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
+import players.AlphaBetaSubplayer;
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
-import players.MinimaxSubplayerBoundedDepth;
-//import players.MinimaxSubplayerFocus;
+import players.MinimaxSubplayerBoundedDepthMobility;
+import players.MinimaxSubplayerFocus;
 import players.PlayerResult;
 import players.SingleSearchPlayer;
 import players.TerminalStateProximity;
@@ -47,6 +48,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
+
 		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
 
 		//		if(getStateMachine().getRoles().size()==1){
@@ -97,7 +99,25 @@ public class PlatypusPlayer extends StateMachineGamer{
 		}
 		
 
-		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity));
+		//		if(getStateMachine().getRoles().size()==1){
+		//			/* Single-player game */
+		//			if(optimalSequence!=null){
+		//				/* Best move is the first move in the sequence */
+		//				Move bestMove = optimalSequence.remove(optimalSequence.size()-1);
+		//				long stop = System.currentTimeMillis();
+		//				notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
+		//				return bestMove;
+		//			}
+		//
+		//		}
+
+
+
+
+		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
+
+		Thread playerThread = new Thread(new AlphaBetaSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState()));
+
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */

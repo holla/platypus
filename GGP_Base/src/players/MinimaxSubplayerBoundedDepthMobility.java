@@ -2,7 +2,6 @@ package players;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -14,43 +13,29 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
-/*** NOT TESTED ***/
+public class MinimaxSubplayerBoundedDepthMobility extends Subplayer {
 
-public class NMobilitySubplayer extends Subplayer{
-	
-//	private class Tuple<X,Y>(){
-//		public final X x;
-//		public final Y y;
-//		public Tuple(X x, Y y){
-//			this.x = x;
-//			this.y = y;
-//		}
-//	}
-	
-	
-	Map<MachineState,Double> memoizedStatesMinValues = new HashMap<MachineState,Double>();
-	Map<MachineState,Double> memoizedStatesMaxValues = new HashMap<MachineState,Double>();
-
-	public NMobilitySubplayer(StateMachine stateMachine, Role role,
+	public MinimaxSubplayerBoundedDepthMobility(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState) {
 		super(stateMachine, role, playerResult, currentState);
-		
+		// TODO Auto-generated constructor stub
 	}
+
 	@Override
 	public void run() {
 		try {
-			int maxDepth = 1;
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
-			double score = Integer.MIN_VALUE;
+			double score = Double.MIN_VALUE;
 			Move bestMoveSoFar = null;
-			while(true){
+			int maxDepth = 1;
+			while (true) {
 				for (Move move : moves) {
 					if (Thread.currentThread().isInterrupted()) return;
 					double result = minscore(move, currentState, maxDepth, maxDepth-1);
 					System.out.println("MOVE: " + move + ", result: " + result);
 					if (result > score) {
-						System.out.println("Updating to "+move);
 						score = result;
+						System.out.println("best move so far: "+ move);
 						bestMoveSoFar = move;
 						playerResult.setBestMoveSoFar(bestMoveSoFar);
 						playerResult.setBestMoveScore(score);
@@ -59,6 +44,7 @@ public class NMobilitySubplayer extends Subplayer{
 				}
 				maxDepth++;
 			}
+
 		} catch (MoveDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,17 +56,10 @@ public class NMobilitySubplayer extends Subplayer{
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 
 	private double minscore(Move move, MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(memoizedStatesMinValues.containsKey(state)){
-			//System.out.println(state);
-			return memoizedStatesMinValues.get(state);
-		}
-		
-		//if(Thread.currentThread().isInterrupted()) return Double.MAX_VALUE;
-		
 		double score = Double.MAX_VALUE;
 		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
 		Collections.shuffle(jointMoves);
@@ -92,21 +71,15 @@ public class NMobilitySubplayer extends Subplayer{
 				score = result;
 			}
 		}
-		//memoizedStatesMinValues.put(state,score);
 		return score;
 	}
 
-	//consider adding a depth parameter (int depth) to only search tree to a certain depth
-	// and add condition to base case if (depth == maxDepth)
-
 	private double maxscore(MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
-		if(Thread.currentThread().isInterrupted()) return Integer.MAX_VALUE;
-		if (currentDepth == maxDepth || stateMachine.isTerminal(state)){
-			return evalFn(state,role);
-		}
-		if(playerResult.containsMemoizedState(state)){
-			//System.out.println("Memoized value!");
+		if (playerResult.containsMemoizedState(state)) {
 			return playerResult.getMemoizedState(state);
+		}
+		if (currentDepth == maxDepth || stateMachine.isTerminal(state)) {
+			return Heuristic.getPlayerMobility(stateMachine, state, role);
 		}
 		List<Move> moves = stateMachine.getLegalMoves(state, role);
 		double score = Double.MIN_VALUE;
@@ -117,16 +90,8 @@ public class NMobilitySubplayer extends Subplayer{
 				score = result;
 			}
 		}
-		memoizedStatesMaxValues.put(state,new Double(score));
-		
+		playerResult.putMemoizedState(state, score);
 		return score;
 	}
-	
-	private double evalFn(MachineState state, Role role) throws GoalDefinitionException, MoveDefinitionException{
-		if (stateMachine.isTerminal(state)){
-			return stateMachine.getGoal(state,role);
-		}else{
-			return Heuristic.getNMobilityNormalized(stateMachine, state, role, 2);
-		}
-	}
+
 }
