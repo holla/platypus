@@ -91,6 +91,25 @@ public class Heuristic {
 		}
 		return 0;
 	}
-
-
+	
+	/*
+	 * Monte Carlo
+	 */
+	public static double getMonteCarlo(StateMachine stateMachine, MachineState state, Role role, long timeout) throws GoalDefinitionException, TransitionDefinitionException, MoveDefinitionException {
+		if (stateMachine.isTerminal(state)) {
+			return stateMachine.getGoal(state, role);
+		}
+		double sum = 0.0;
+		double numTerminalStatesVisited = 0.0;
+		System.out.println("timeout: " + timeout + " currTime: " + System.currentTimeMillis());
+		for (int i = 0; i < 50; i++){
+			int[] theDepth = new int[1];
+			MachineState terminal = stateMachine.performDepthCharge(state, theDepth);
+			sum += stateMachine.getGoal(terminal, role);
+			numTerminalStatesVisited += 1;
+		}
+		double goal = sum / numTerminalStatesVisited;
+		System.out.println("est goal: " + goal);
+		return sum / numTerminalStatesVisited;	
+	}
 }

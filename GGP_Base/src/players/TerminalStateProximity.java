@@ -14,8 +14,8 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class TerminalStateProximity {
-	private static final double COUNTS_TIMEREMAINING = 3000;
-	private static final double MONTECARLO_TIMEREMAINING = 5000+COUNTS_TIMEREMAINING;
+	private static final double COUNTS_TIMEREMAINING = 500;
+	private static final double MONTECARLO_TIMEREMAINING = 1000+COUNTS_TIMEREMAINING;
 	private StateMachine stateMachine;
 	private MachineState initialState;
 	private Map<GdlSentence, Double> terminalSentenceCounts = new HashMap<GdlSentence, Double>();

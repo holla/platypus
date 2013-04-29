@@ -1,11 +1,13 @@
 package players;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
+import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
@@ -20,66 +22,74 @@ public class ExpectimaxSubplayer extends Subplayer {
 	@Override
 	public void run() {
 		try {
-			Map<Move, List<MachineState>> moveStateMap = super.stateMachine.getNextStates(super.currentState, super.role);
-			int valMax = Integer.MIN_VALUE;
-			int currentStateScore = eval(super.currentState);
-			for (Move move : moveStateMap.keySet()) {
-				List<MachineState> possNextStates = moveStateMap.get(move);
-				
-				for (MachineState nextState : possNextStates) {
-					int val = Math.max(valMax, currentStateScore + minimax(nextState, super.role, 0));
-					if (val > valMax) {
-						valMax = val;
-						super.playerResult.setBestMoveSoFar(move);
-						super.playerResult.setBestMoveScore(valMax);
+			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
+			double score = Double.MIN_VALUE;
+			Move bestMoveSoFar = null;
+			int maxDepth = 1;
+			while (true) {
+				for (Move move : moves) {
+					if (Thread.currentThread().isInterrupted()) return;
+					double result = minscore(move, currentState, maxDepth, maxDepth-1);
+					System.out.println("MOVE: " + move + ", result: " + result);
+					if (result > score) {
+						score = result;
+						System.out.println("best move so far: "+ move);
+						bestMoveSoFar = move;
+						playerResult.setBestMoveSoFar(bestMoveSoFar);
+						playerResult.setBestMoveScore(score);
 					}
+					//parentThread.interrupt();
 				}
+				maxDepth++;
 			}
+
 		} catch (MoveDefinitionException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (GoalDefinitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (TransitionDefinitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	//consider adding a depth parameter (int depth) to only search tree to a certain depth
-	// and add condition to base case if (depth == maxDepth)
-	private int minimax(MachineState state, Role currRole, int playersPlayed) throws MoveDefinitionException, TransitionDefinitionException {
-		if (playersPlayed == super.stateMachine.getRoles().size()|| super.stateMachine.isTerminal(state)) {
-			return eval(state);
-		}
-		
-		if (currRole == super.role) {
-			int val = Integer.MIN_VALUE;
-			
-			for (Move move : super.stateMachine.getLegalMoves(state, currRole)) {
-				//look at all possible states instead of just a random one
-				MachineState randomNextState = super.stateMachine.getRandomNextState(state, currRole, move);
-				val = Math.max(val, minimax(randomNextState, getNextRole(currRole), ++playersPlayed));
+	private double minscore(Move move, MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		double score = Double.MAX_VALUE;
+		List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(state, role, move);
+		Collections.shuffle(jointMoves);
+		for (int i = 0; i < jointMoves.size(); i++) {
+			List<Move> jointMove = jointMoves.get(i);
+			MachineState newState = stateMachine.getNextState(state, jointMove);
+			double result = maxscore(newState, maxDepth, currentDepth);
+			if (result < score) {
+				score = result;
 			}
-			return val;
-		} else {
-			int sum = 0;
-			for (Move move : super.stateMachine.getLegalMoves(state, currRole)) {
-				//look at all possible states instead of just a random one
-				MachineState randomNextState = super.stateMachine.getRandomNextState(state, currRole, move);
-				sum += minimax(randomNextState, getNextRole(currRole), ++playersPlayed);
-			}
-			return sum / super.stateMachine.getLegalMoves(state, currRole).size();
 		}
-	}
-	
-	private Role getNextRole(Role currRole) {
-		Map<Role, Integer> roleMap = super.stateMachine.getRoleIndices();
-		int nextRoleIndex = (roleMap.get(currRole) + 1) % super.stateMachine.getRoles().size();
-		Role nextRole = super.stateMachine.getRoles().get(nextRoleIndex);
-		return nextRole;
+		return score;
 	}
 
-	private int eval(MachineState machineState) {
-		// TODO Auto-generated method stub
-		return 0;
+	private double maxscore(MachineState state, int maxDepth, int currentDepth) throws MoveDefinitionException, GoalDefinitionException, TransitionDefinitionException {
+		if (playerResult.containsMemoizedState(state)) {
+			return playerResult.getMemoizedState(state);
+			//double stateHeuristic = terminalStateProximity.evaluateState(state);
+		}
+		if (currentDepth == maxDepth || stateMachine.isTerminal(state)) {
+			return Heuristic.getPlayerMobility(stateMachine, state, role);
+		}
+		List<Move> moves = stateMachine.getLegalMoves(state, role);
+		double score = Double.MIN_VALUE;
+		Collections.shuffle(moves);
+		for (Move move : moves) {
+			double result = minscore(move, state, maxDepth, currentDepth+1);
+			if (result > score) {
+				score = result;
+			}
+		}
+		playerResult.putMemoizedState(state, score);
+		return score;
 	}
+
 
 }

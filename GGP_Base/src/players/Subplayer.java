@@ -9,6 +9,7 @@ public abstract class Subplayer implements Runnable{
 	Role role;
 	PlayerResult playerResult;
 	MachineState currentState;
+	long timeout;
 	
 	public Subplayer(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState) {
@@ -16,5 +17,14 @@ public abstract class Subplayer implements Runnable{
 		this.role = role;
 		this.playerResult = playerResult;
 		this.currentState = currentState;
+	}
+	
+	public Subplayer(StateMachine stateMachine, Role role,
+			PlayerResult playerResult, MachineState currentState, long timeout) {
+		this.stateMachine = stateMachine;
+		this.role = role;
+		this.playerResult = playerResult;
+		this.currentState = currentState;
+		this.timeout = timeout;
 	}
 }
