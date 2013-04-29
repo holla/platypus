@@ -4,7 +4,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import org.ggp.base.player.gamer.statemachine.PlatypusPlayer.PlatypusPlayer;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
@@ -13,11 +15,14 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
+import platypus.logging.PlatypusLogger;
+
 public class MinimaxSubplayer extends Subplayer {
 
+
 	public MinimaxSubplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState) {
-		super(stateMachine, role, playerResult, currentState);
+			PlayerResult playerResult, MachineState currentState, Logger log) {
+		super(stateMachine, role, playerResult, currentState, log);
 		// TODO Auto-generated constructor stub
 	}
 	

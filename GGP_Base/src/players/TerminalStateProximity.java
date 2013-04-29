@@ -57,7 +57,7 @@ public class TerminalStateProximity {
 				currentState = stateMachine.getRandomNextState(currentState);
 			}
 			System.out.println(stateMachine.getGoal(currentState,role));
-			if(System.currentTimeMillis()<finishTime)
+			if(System.currentTimeMillis()<finishTime && stateMachine.getGoal(currentState, role) == 100)
 				terminalStates.add(currentState);
 		}
 		System.out.println("Found " + terminalStates.size() + " terminal states");
@@ -73,7 +73,7 @@ public class TerminalStateProximity {
 	private Map<GdlSentence,Double> generateTerminalSentenceCounts(Set<MachineState> terminalStates) throws GoalDefinitionException{
 		Map<GdlSentence, Double> sentenceCounts = new HashMap<GdlSentence,Double>();
 		for(MachineState state : terminalStates){
-			int goal = stateMachine.getGoal(state, role);
+			//int goal = stateMachine.getGoal(state, role);
 			for(GdlSentence sentence : state.getContents()){
 				if(sentenceCounts.containsKey(sentence)){
 					sentenceCounts.put(sentence, sentenceCounts.get(sentence)+1);

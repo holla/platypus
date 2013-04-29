@@ -4,6 +4,8 @@ package org.ggp.base.player.gamer.statemachine.PlatypusPlayer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.ggp.base.apps.player.detail.DetailPanel;
 import org.ggp.base.apps.player.detail.SimpleDetailPanel;
@@ -20,6 +22,7 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
+import platypus.logging.PlatypusLogger;
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
 import players.MinimaxSubplayerBoundedDepth;
@@ -35,6 +38,10 @@ public class PlatypusPlayer extends StateMachineGamer{
 	private List<Move> optimalSequence = null;
 	private PlayerResult playerResult = new PlayerResult();
 	private TerminalStateProximity terminalStateProximity;
+	
+	//Optional second argument - level of logging. Default is ALL. Logs to logs/platypus
+	private static Logger log = PlatypusLogger.getLogger("game"+System.currentTimeMillis());
+
 
 	@Override
 	public StateMachine getInitialStateMachine() {
@@ -47,8 +54,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
 		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
-		
-//		if(getStateMachine().getRoles().size()==1){
+	//		if(getStateMachine().getRoles().size()==1){
 //			/* Single-player game, so try to brute force as much as possible */
 //			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
 //		}
@@ -115,8 +121,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 		
 
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
-
-		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6));
+		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6, log));
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */

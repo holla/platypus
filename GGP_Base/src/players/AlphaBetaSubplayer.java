@@ -3,6 +3,7 @@ package players;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -15,8 +16,8 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 public class AlphaBetaSubplayer extends Subplayer {
 
 	public AlphaBetaSubplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState) {
-		super(stateMachine, role, playerResult, currentState);
+			PlayerResult playerResult, MachineState currentState, Logger log) {
+		super(stateMachine, role, playerResult, currentState, log);
 		// TODO Auto-generated constructor stub
 	}
 
