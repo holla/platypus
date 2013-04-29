@@ -99,6 +99,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 			return bestMove;
 		}
 		
+
 		//		if(getStateMachine().getRoles().size()==1){
 		//			/* Single-player game */
 		//			if(optimalSequence!=null){
