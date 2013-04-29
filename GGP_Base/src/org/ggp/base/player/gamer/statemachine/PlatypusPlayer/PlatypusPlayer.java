@@ -22,12 +22,9 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
-<<<<<<< HEAD
 import platypus.logging.PlatypusLogger;
-=======
 import players.AlphaBetaSubplayer;
 import players.MinimaxMonteCarloSubplayer;
->>>>>>> f9899f9234bcd5461b6a52fde06a16be9321ec18
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
 import players.MinimaxSubplayerBoundedDepthMobility;
@@ -59,21 +56,14 @@ public class PlatypusPlayer extends StateMachineGamer{
 	public void stateMachineMetaGame(long timeout)
 			throws TransitionDefinitionException, MoveDefinitionException,
 			GoalDefinitionException {
-<<<<<<< HEAD
-		terminalStateProximity = new TerminalStateProximity(timeout-3000, getStateMachine(), getCurrentState(), getRole());
-	//		if(getStateMachine().getRoles().size()==1){
-//			/* Single-player game, so try to brute force as much as possible */
-//			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
-//		}
-=======
 
-		terminalStateProximity = new TerminalStateProximity(timeout-1000, getStateMachine(), getCurrentState(), getRole());
+
+		terminalStateProximity = new TerminalStateProximity(timeout-1000, getStateMachine(), getCurrentState(), getRole(), log);
 
 		//		if(getStateMachine().getRoles().size()==1){
 		//			/* Single-player game, so try to brute force as much as possible */
 		//			optimalSequence = solveSinglePlayerGame(getStateMachine(),getCurrentState());
 		//		}
->>>>>>> f9899f9234bcd5461b6a52fde06a16be9321ec18
 
 	}
 
@@ -134,13 +124,9 @@ public class PlatypusPlayer extends StateMachineGamer{
 
 
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
-<<<<<<< HEAD
-		Thread playerThread = new Thread(new MinimaxProximitySubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(),terminalStateProximity,6, log));
-=======
 
 		
 		Thread playerThread = new Thread(new MinimaxMonteCarloSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(), terminalStateProximity, timeout-2000));
->>>>>>> f9899f9234bcd5461b6a52fde06a16be9321ec18
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
