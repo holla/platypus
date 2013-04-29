@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.ggp.base.util.gdl.grammar.GdlSentence;
 import org.ggp.base.util.statemachine.MachineState;
@@ -14,20 +15,22 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class TerminalStateProximity {
-	private static final double COUNTS_TIMEREMAINING = 3000;
-	private static final double MONTECARLO_TIMEREMAINING = 5000+COUNTS_TIMEREMAINING;
+	private static final double COUNTS_TIMEREMAINING = 500;
+	private static final double MONTECARLO_TIMEREMAINING = 1000+COUNTS_TIMEREMAINING;
 	private StateMachine stateMachine;
 	private MachineState initialState;
 	private Map<GdlSentence, Double> terminalSentenceCounts = new HashMap<GdlSentence, Double>();
 	private int numberTerminalStates;
 	private int numberGdlSentences;
 	private Role role;
+	private Logger log;
 
 	/* @param timeout the system time by which it must be done */
-	public TerminalStateProximity(long timeout, StateMachine stateMachine, MachineState initialState, Role role) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
+	public TerminalStateProximity(long timeout, StateMachine stateMachine, MachineState initialState, Role role, Logger log) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
 		this.stateMachine = stateMachine;
 		this.initialState = initialState;
 		this.role = role;
+		this.log = log;
 
 		/* temporary */
 		long terminationTimeLimit = timeout-(long)MONTECARLO_TIMEREMAINING;
@@ -56,8 +59,9 @@ public class TerminalStateProximity {
 			while(!stateMachine.isTerminal(currentState) && System.currentTimeMillis()<finishTime){
 				currentState = stateMachine.getRandomNextState(currentState);
 			}
-			System.out.println(stateMachine.getGoal(currentState,role));
-			if(System.currentTimeMillis()<finishTime && stateMachine.getGoal(currentState, role) == 100)
+
+			//System.out.println(stateMachine.getGoal(currentState,role));
+			if(System.currentTimeMillis()<finishTime)
 				terminalStates.add(currentState);
 		}
 		System.out.println("Found " + terminalStates.size() + " terminal states");
@@ -73,12 +77,12 @@ public class TerminalStateProximity {
 	private Map<GdlSentence,Double> generateTerminalSentenceCounts(Set<MachineState> terminalStates) throws GoalDefinitionException{
 		Map<GdlSentence, Double> sentenceCounts = new HashMap<GdlSentence,Double>();
 		for(MachineState state : terminalStates){
-			//int goal = stateMachine.getGoal(state, role);
+			int goal = stateMachine.getGoal(state, role);
 			for(GdlSentence sentence : state.getContents()){
 				if(sentenceCounts.containsKey(sentence)){
-					sentenceCounts.put(sentence, sentenceCounts.get(sentence)+1);
+					sentenceCounts.put(sentence, sentenceCounts.get(sentence)+(goal-50.0)/50);
 				} else{
-					sentenceCounts.put(sentence, 1.0);
+					sentenceCounts.put(sentence, (goal-50.0)/50);
 				}
 			}
 		}

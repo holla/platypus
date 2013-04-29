@@ -30,6 +30,7 @@ public class MinimaxSubplayer extends Subplayer {
 	public void run() {
 		try {
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
+			Collections.shuffle(moves);
 			double score = Integer.MIN_VALUE;
 			Move bestMoveSoFar = null;
 			for (Move move : moves) {
