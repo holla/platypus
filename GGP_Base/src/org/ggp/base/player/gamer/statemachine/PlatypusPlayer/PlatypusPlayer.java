@@ -24,6 +24,7 @@ import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import platypus.logging.PlatypusLogger;
 import players.AlphaBetaSubplayer;
+import players.BryceMonteCarloTreeSearch;
 import players.MinimaxMonteCarloSubplayer;
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
@@ -126,17 +127,31 @@ public class PlatypusPlayer extends StateMachineGamer{
 		//Thread singleSearchPlayer = new Thread(new SingleSearchPlayer(getStateMachine(), getRole(), singleSearchPlayerResult,getCurrentState()));
 
 		
-		Thread playerThread = new Thread(new MinimaxMonteCarloSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(), terminalStateProximity, timeout-2000));
+		//Thread playerThread = new Thread(new MinimaxMonteCarloSubplayer(getStateMachine(), getRole(), playerResult,getCurrentState(), terminalStateProximity, timeout-2000));
+		
+		/* Allocate 10% of time to basic minimax */
+		//Thread minimaxPlayerThread = new Thread(new MinimaxSubplayer)
+		
+		
+		Thread playerThread = new Thread(new BryceMonteCarloTreeSearch(getStateMachine(), getRole(), playerResult,getCurrentState(), log));
+		
 		playerThread.start();
 		try {
 			/* Sleep for 2 seconds less than the maximum time allowed */
-			Thread.sleep(timeout-start-2000);
+			Thread.sleep(timeout-start-2500);
 		} catch (InterruptedException e) {
 			System.out.println("Done with subplayer!");
 			//e.printStackTrace();
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */
 		playerThread.interrupt();
+		try {
+			/* Sleep for 2 seconds less than the maximum time allowed */
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			System.out.println("Done with subplayer!");
+			//e.printStackTrace();
+		}
 		Move bestMove = playerResult.getBestMoveSoFar();
 		System.out.println("--------Best Move--------");
 		if (bestMove == null) {
