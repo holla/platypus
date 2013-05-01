@@ -4,7 +4,6 @@ package org.ggp.base.player.gamer.statemachine.PlatypusPlayer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.ggp.base.apps.player.detail.DetailPanel;
@@ -15,7 +14,6 @@ import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
@@ -23,17 +21,10 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import platypus.logging.PlatypusLogger;
-import players.AlphaBetaSubplayer;
 import players.BryceMonteCarloTreeSearch;
-import players.MinimaxMonteCarloSubplayer;
-import players.MinimaxProximitySubplayer;
-import players.MinimaxSubplayer;
-import players.MinimaxSubplayerBounded;
-import players.MinimaxSubplayerBoundedDepthMobility;
-import players.MinimaxSubplayerFocus;
 import players.PlayerResult;
-import players.SingleSearchPlayer;
 import players.TerminalStateProximity;
+import players.WinCheck;
 
 
 public class PlatypusPlayer extends StateMachineGamer{
@@ -133,13 +124,9 @@ public class PlatypusPlayer extends StateMachineGamer{
 		/* Allocate 10% of time to basic minimax */
 		//Thread minimaxPlayerThread = new Thread(new MinimaxSubplayer)
 		
-		Thread minimaxThread = new Thread(new MinimaxSubplayerBounded(getStateMachine(), getRole(), playerResult, getCurrentState(), log));
+		Thread minimaxThread = new Thread(new WinCheck(getStateMachine(), getRole(), playerResult, getCurrentState(), log));
 		minimaxThread.start();
-		try{
-			Thread.sleep(2000);
-		} catch(InterruptedException e){
-			System.out.println("Done with minimax");
-		}
+		
 		minimaxThread.interrupt();
 		Move sureMove = playerResult.sureMove;
 		System.out.println("--------Best Move after Minimiax--------");
@@ -173,7 +160,7 @@ public class PlatypusPlayer extends StateMachineGamer{
 			//e.printStackTrace();
 		}
 		Move bestMove = playerResult.getBestMoveSoFar();
-		System.out.println("--------Best Move--------");
+		System.out.println("--------Best Move after Monte Carlo--------");
 		if (bestMove == null) {
 			bestMove = moves.get(new Random().nextInt(moves.size()));
 			System.out.println("CHOSE RANDOM");
@@ -181,7 +168,17 @@ public class PlatypusPlayer extends StateMachineGamer{
 		long stop = System.currentTimeMillis();
 		System.out.println("best move: " + bestMove);
 		notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop - start));
-		return bestMove;
+		
+		if (playerResult.legitimateMoves.contains(bestMove)){
+			System.out.println("Best move " + bestMove + " is legitimate");
+			return bestMove;
+		}else{
+			
+			System.out.println(bestMove + " is a losing move :(. Returning random from non-losing");
+			System.out.println("Choosing one of " + playerResult.legitimateMoves.size() + " other moves");
+			
+			return (playerResult.legitimateMoves.size() > 0) ? playerResult.legitimateMoves.get(0) : bestMove;
+		}
 	}
 
 	@Override

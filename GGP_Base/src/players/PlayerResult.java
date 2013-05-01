@@ -1,5 +1,6 @@
 package players;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.ggp.base.util.statemachine.MachineState;
@@ -7,6 +8,7 @@ import org.ggp.base.util.statemachine.Move;
 
 public class PlayerResult{
 	public Move bestMoveSoFar;
+	public ArrayList<Move> legitimateMoves = new ArrayList<Move>();
 	/* A double 0-100 representing how good the current best move is */
 	public double bestMoveScore;
 	public Move sureMove;
