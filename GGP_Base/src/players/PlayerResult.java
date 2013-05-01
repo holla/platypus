@@ -9,7 +9,7 @@ public class PlayerResult{
 	public Move bestMoveSoFar;
 	/* A double 0-100 representing how good the current best move is */
 	public double bestMoveScore;
-	
+	public Move sureMove;
 	public HashMap<MachineState,Integer> memoizedMachineStateGoals = new HashMap<MachineState,Integer>();
 	public HashMap<MachineState,Double> memoizedMachineStates = new HashMap<MachineState,Double>();
 	

@@ -56,7 +56,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 				GameNode targetNode = select(currentNode);
 				
 				expand(targetNode);
-				MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
+				MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null); 
 				double simulatedValue = stateMachine.getGoal(simulatedTerminalState, role) / 100.0;
 				
 				/* Put the values back into the tree! */
@@ -147,7 +147,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 	 */
 	
 	public double selectFunction(GameNode node){
-		return node.value +Math.sqrt(2*Math.log(1.0*node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
+		return node.value + Math.sqrt(2*Math.log(1.0*node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
 	}
 	
 	/**
@@ -181,7 +181,6 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 	
 	private void backPropogate(GameNode finalNode, double value){
 		/* Update value in map */
-		
 		finalNode.numVisits++;
 		finalNode.value+=value;
 		stateValues.put(finalNode.state, finalNode);

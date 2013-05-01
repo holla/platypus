@@ -28,6 +28,7 @@ import players.BryceMonteCarloTreeSearch;
 import players.MinimaxMonteCarloSubplayer;
 import players.MinimaxProximitySubplayer;
 import players.MinimaxSubplayer;
+import players.MinimaxSubplayerBounded;
 import players.MinimaxSubplayerBoundedDepthMobility;
 import players.MinimaxSubplayerFocus;
 import players.PlayerResult;
@@ -131,6 +132,25 @@ public class PlatypusPlayer extends StateMachineGamer{
 		
 		/* Allocate 10% of time to basic minimax */
 		//Thread minimaxPlayerThread = new Thread(new MinimaxSubplayer)
+		
+		Thread minimaxThread = new Thread(new MinimaxSubplayerBounded(getStateMachine(), getRole(), playerResult, getCurrentState(), log));
+		minimaxThread.start();
+		try{
+			Thread.sleep(2000);
+		} catch(InterruptedException e){
+			System.out.println("Done with minimax");
+		}
+		minimaxThread.interrupt();
+		Move sureMove = playerResult.sureMove;
+		System.out.println("--------Best Move after Minimiax--------");
+		if (sureMove == null) {
+			System.out.println("minimax did not result in anything");
+		}else{
+			long stop = System.currentTimeMillis();
+			System.out.println("best move: " + sureMove);
+			notifyObservers(new GamerSelectedMoveEvent(moves, sureMove, stop - start));
+			return sureMove;
+		}
 		
 		
 		Thread playerThread = new Thread(new BryceMonteCarloTreeSearch(getStateMachine(), getRole(), playerResult,getCurrentState(), log));

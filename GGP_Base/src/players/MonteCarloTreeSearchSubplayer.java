@@ -1,8 +1,6 @@
 package players;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +35,7 @@ public class MonteCarloTreeSearchSubplayer extends Subplayer{
 
 	public MonteCarloTreeSearchSubplayer(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState) {
-		super(stateMachine, role, playerResult, currentState);
+		super(stateMachine, role, playerResult, currentState, log);
 
 	}
 	@Override
