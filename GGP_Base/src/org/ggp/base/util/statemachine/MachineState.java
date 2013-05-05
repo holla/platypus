@@ -1,9 +1,11 @@
 package org.ggp.base.util.statemachine;
 
+import java.io.Serializable;
 import java.util.Set;
 import org.ggp.base.util.gdl.grammar.GdlSentence;
 
-public class MachineState {
+@SuppressWarnings("serial")
+public class MachineState implements Serializable{
     public MachineState() {
         this.contents = null;
     }

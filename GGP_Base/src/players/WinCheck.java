@@ -26,15 +26,15 @@ public class WinCheck extends Subplayer {
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
 
 			for (Move move: moves){
-
 				List<List<Move>> legalJointMoves = stateMachine.getLegalJointMoves(currentState, role, move);
 				boolean sureMoveFound = true;
 				Move sureMove = null;
-				boolean avoidMove = false;
 				for (List<Move> jointMove: legalJointMoves){
 					MachineState nextState = stateMachine.getNextState(currentState, jointMove);
 					
 					if (stateMachine.isTerminal(nextState)){
+						System.out.println("Found terminal state: "+ nextState);
+						System.out.println("It results in goal of " + stateMachine.getGoal(nextState, role));
 						if (stateMachine.getGoal(nextState, role) == 100){
 							//found the right move!
 							// not returning right away because need to check
@@ -43,16 +43,9 @@ public class WinCheck extends Subplayer {
 						}else {
 							sureMoveFound = false;
 						}
-						if (stateMachine.getGoal(nextState, role) == 0){
-							//don't take this move
-							avoidMove = true;
-						}
 					}else{
 						sureMoveFound = false;
 					}
-				}
-				if (!avoidMove){
-					playerResult.legitimateMoves.add(move);
 				}
 				if (sureMoveFound){
 					playerResult.sureMove = sureMove;
