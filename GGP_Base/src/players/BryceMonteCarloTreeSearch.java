@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.ggp.base.util.statemachine.MachineState;
@@ -21,22 +22,15 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 public class BryceMonteCarloTreeSearch extends Subplayer{
 
-	//	private class Tuple<X,Y>(){
-	//		public final X x;
-	//		public final Y y;
-	//		public Tuple(X x, Y y){
-	//			this.x = x;
-	//			this.y = y;
-	//		}
-	//	}
 
 	private Map<MachineState,GameNode> stateValues = new HashMap<MachineState, GameNode>();
 	//private Map<MachineState,Integer> stateVisits = new HashMap<MachineState, Integer>();
 	//private Map<MachineState,List<MachineState>> stateChildren = new HashMap<MachineState,List<MachineState>>();
 	private static Random rand = new Random();
 	private static final double epsilon = 1e-6;
-	
-	//private Map<MachineState,Double> 
+
+	/* Enables a check to only expand to nodes that won't cause the player to get a score of 0 in a terminal state */
+	private static final boolean GUARANTEED_LOSSES_SINGLE_MOVE_CHECK = true;
 
 	public BryceMonteCarloTreeSearch(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState, Logger logger) {
@@ -54,7 +48,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 
 				/* Select the next node to expand */
 				GameNode targetNode = select(currentNode);
-				
+
 				expand(targetNode);
 				/* Estimate value of leaf */
 				double simulatedValue= 0;
@@ -62,7 +56,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 					MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
 					simulatedValue+= stateMachine.getGoal(simulatedTerminalState, role) / 2;
 				}
-				
+
 				/* Put the values back into the tree! */
 				backPropogate(targetNode,simulatedValue);
 				if(Thread.currentThread().isInterrupted()) break;
@@ -70,13 +64,13 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 
 			/*  Choose the move that gives the node with the highest value to give back to the player */
 			double bestValue = Double.MIN_VALUE;
-			
+
 			Move bestMove = null;
 			List<Move> moves = stateMachine.getLegalMoves(currentState, role);
 			for(Move move : moves){
 				List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(currentState, role, move);
 				double moveMinValue = Double.MAX_VALUE;
-				
+
 				/* Playing conservatively, see what the lowest value is that an opponent could cause this move to have */
 				int totalVisits = 0;
 				for(List<Move> movesToMake : jointMoves){
@@ -95,7 +89,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 					bestValue = moveMinValue;
 				}
 			}
-			
+
 			playerResult.setBestMoveSoFar(bestMove);
 
 		} catch (MoveDefinitionException e) {
@@ -117,13 +111,13 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 	 * @param startNode the node to start searching the tree from
 	 * @return a GameNode to be expanded
 	 */
-	
+
 	private GameNode select(GameNode startNode){
 		if(startNode.numVisits==0) return startNode;
 		/* checks if any children have not yet been expanded; if so, returns them */
 		if(startNode.children==null) return startNode;
 		for(GameNode gn : startNode.children){
-			
+
 			if(gn.numVisits==0) {
 				return gn;
 			}
@@ -133,7 +127,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 		/* Choose the best child node based on a hueristic function selectFunction and then go down that branch looking for
 		 * an unexpanded node.
 		 */
-		
+
 		//Collections.shuffle(startNode.children); //This might be needed in the future, but it runs the program out of memory if called repeatedly
 		for(GameNode gn : startNode.children){
 			double newScore = selectFunction(gn);
@@ -144,49 +138,78 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 		}
 		return select(bestNode);
 	}
-	
+
 	/**
 	 * Returns a heuristic to estimate the simulated value of the given node based on visits and its current value
 	 * @param node
 	 * @return
 	 */
-	
+
 	public double selectFunction(GameNode node){
 		return node.value / node.numVisits +50*Math.sqrt(Math.log(node.parent.numVisits)/(double)node.numVisits);// + rand.nextDouble()*epsilon;
 	}
-	
+
 	/**
 	 * Expands the given GameNode to make use of its children, creating new GameNodes for each child and initializing their
 	 * values and visits to 0
 	 * @param startNode
 	 * @throws MoveDefinitionException 
 	 * @throws TransitionDefinitionException 
+	 * @throws GoalDefinitionException 
 	 */
-	
-	private void expand(GameNode startNode) throws MoveDefinitionException, TransitionDefinitionException{
+
+	private void expand(GameNode startNode) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
 		//log.info("failed to expand");
 		if(stateMachine.isTerminal(startNode.state)) return;
-		
-		List<MachineState> nextStates = stateMachine.getNextStates(startNode.state);
+
+
+
 		startNode.children = new LinkedList<GameNode>();
-		for(MachineState state: nextStates){
-			GameNode newChild = new GameNode(state);
-			startNode.children.add(newChild);
-			newChild.parent = startNode;
+		if(GUARANTEED_LOSSES_SINGLE_MOVE_CHECK){
+
+			List<Move> legalMoves = stateMachine.getLegalMoves(startNode.state, role);
+			//Set<Move> losingMoves = new HashSet<Move>();
+			for (Move move : legalMoves) {
+				List<List<Move>> jointMoves = stateMachine.getLegalJointMoves(startNode.state, role, move);
+
+				for(List<Move> jointMove : jointMoves){
+					MachineState nextState = stateMachine.getNextState(startNode.state, jointMove);
+					if (!stateMachine.isTerminal(nextState) || (stateMachine.isTerminal(nextState) && stateMachine.getGoal(nextState,role)!=0)) {
+						GameNode newChild = new GameNode(nextState);
+						startNode.children.add(newChild);
+						newChild.parent = startNode;
+					}
+				}
+			}
+			if(startNode.children.size()==0){
+				log.warning("Only Guaranteed Losses Found: " + startNode.state);
+			}
+		} else
+		{
+
+
+
+			List<MachineState> nextStates = stateMachine.getNextStates(startNode.state);
+			/* Remove any terminal states where it gets a score of 0 from consideration */
+			for(MachineState state: nextStates){
+				GameNode newChild = new GameNode(state);
+				startNode.children.add(newChild);
+				newChild.parent = startNode;
+			}
 		}
 		//log.info("added " + startNode.children.size() + " new nodes ");
 	}
-	
+
 	/**
 	 * Updates the value of the given node in the game tree as well as the values of all of its parents.  Also updates visited counts.
 	 * Updates the value associated in the map to be the average value of the node
 	 * @param finalNode
 	 * @param value
 	 */
-	
+
 	private void backPropogate(GameNode finalNode, double value){
 		/* Update value in map */
-		
+
 		finalNode.numVisits++;
 		finalNode.value+=value;
 		stateValues.put(finalNode.state, finalNode);
