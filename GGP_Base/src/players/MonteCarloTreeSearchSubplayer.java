@@ -1,12 +1,11 @@
 package players;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Logger;
 
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -36,8 +35,8 @@ public class MonteCarloTreeSearchSubplayer extends Subplayer{
 	private static final double epsilon = 1e-6;
 
 	public MonteCarloTreeSearchSubplayer(StateMachine stateMachine, Role role,
-			PlayerResult playerResult, MachineState currentState) {
-		super(stateMachine, role, playerResult, currentState);
+			PlayerResult playerResult, MachineState currentState, Logger log) {
+		super(stateMachine, role, playerResult, currentState, log);
 
 	}
 	@Override

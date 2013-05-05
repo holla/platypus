@@ -1,15 +1,20 @@
 package players;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 
 public class PlayerResult{
+	public boolean gameSolved;
+	public boolean gameSolved_temp;
 	public Move bestMoveSoFar;
+//	public ArrayList<Move> legitimateMoves = new ArrayList<Move>();
 	/* A double 0-100 representing how good the current best move is */
 	public double bestMoveScore;
-	
+	public Move sureMove;
+	public double sureScore;
 	public HashMap<MachineState,Integer> memoizedMachineStateGoals = new HashMap<MachineState,Integer>();
 	public HashMap<MachineState,Double> memoizedMachineStates = new HashMap<MachineState,Double>();
 	
