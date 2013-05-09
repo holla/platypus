@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2013-05-05T15:43:40</date>
+  <millis>1367793820657</millis>
+  <sequence>0</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>platypus.logging.PlatypusLogger</class>
+  <method>getLogger</method>
+  <thread>10</thread>
+  <message>Added FileHandler to Logger</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884256</millis>
+  <sequence>1</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 4 ) value: 42.0 visited: 42</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884256</millis>
+  <sequence>2</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 3 ) value: 44.0 visited: 44</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884257</millis>
+  <sequence>3</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 8 ) value: 17.0 visited: 17</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884257</millis>
+  <sequence>4</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 5 ) value: 17.0 visited: 17</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884257</millis>
+  <sequence>5</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 2 ) value: 12.0 visited: 12</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884257</millis>
+  <sequence>6</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 6 ) value: 27.0 visited: 27</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884258</millis>
+  <sequence>7</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 1 ) value: 25.0 visited: 25</message>
+</record>
+<record>
+  <date>2013-05-05T15:44:44</date>
+  <millis>1367793884258</millis>
+  <sequence>8</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>11</thread>
+  <message>move: ( drop 7 ) value: 38.0 visited: 38</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900218</millis>
+  <sequence>9</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 4 ) value: 25.0 visited: 25</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900218</millis>
+  <sequence>10</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 3 ) value: 36.0 visited: 36</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900218</millis>
+  <sequence>11</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 8 ) value: 25.0 visited: 25</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900219</millis>
+  <sequence>12</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 5 ) value: 79.0 visited: 79</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900219</millis>
+  <sequence>13</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 2 ) value: 32.0 visited: 32</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900219</millis>
+  <sequence>14</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 6 ) value: 38.0 visited: 38</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900220</millis>
+  <sequence>15</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 1 ) value: 20.0 visited: 20</message>
+</record>
+<record>
+  <date>2013-05-05T15:45:00</date>
+  <millis>1367793900220</millis>
+  <sequence>16</sequence>
+  <logger>game1367793820654</logger>
+  <level>INFO</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>run</method>
+  <thread>12</thread>
+  <message>move: ( drop 7 ) value: 8.0 visited: 8</message>
+</record>
+</log>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE log SYSTEM "logger.dtd">
+<log>
+<record>
+  <date>2013-05-07T23:42:17</date>
+  <millis>1367995337926</millis>
+  <sequence>0</sequence>
+  <logger>game1367995337923</logger>
+  <level>INFO</level>
+  <class>platypus.logging.PlatypusLogger</class>
+  <method>getLogger</method>
+  <thread>10</thread>
+  <message>Added FileHandler to Logger</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:42</date>
+  <millis>1367995362593</millis>
+  <sequence>1</sequence>
+  <logger>game1367995337923</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>--------Best Move after Minimiax--------</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:42</date>
+  <millis>1367995362594</millis>
+  <sequence>2</sequence>
+  <logger>game1367995337923</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>Sure move is ( mark 2 1 )</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:42</date>
+  <millis>1367995362594</millis>
+  <sequence>3</sequence>
+  <logger>game1367995337923</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>with the sure score of 0.0</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:42</date>
+  <millis>1367995362595</millis>
+  <sequence>4</sequence>
+  <logger>game1367995337923</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>Starting Monte Carlo</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:42</date>
+  <millis>1367995362595</millis>
+  <sequence>5</sequence>
+  <logger>game1367995337923</logger>
+  <level>INFO</level>
+  <class>org.ggp.base.player.gamer.statemachine.PlatypusPlayer.PlatypusPlayer</class>
+  <method>stateMachineSelectMove</method>
+  <thread>11</thread>
+  <message>PAUSING PLATYPUS FOR 12400</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:45</date>
+  <millis>1367995365471</millis>
+  <sequence>6</sequence>
+  <logger>game1367995337923</logger>
+  <level>WARNING</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>expand</method>
+  <thread>12</thread>
+  <message>Only Guaranteed Losses Found: [( true ( cell 3 3 b ) ), ( true ( cell 3 1 o ) ), ( true ( cell 2 2 x ) ), ( true ( cell 1 3 x ) ), ( true ( cell 2 1 o ) ), ( true ( cell 3 2 o ) ), ( true ( cell 2 3 x ) ), ( true ( cell 1 1 b ) ), ( true ( control oplayer ) ), ( true ( cell 1 2 x ) )]</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:45</date>
+  <millis>1367995365510</millis>
+  <sequence>7</sequence>
+  <logger>game1367995337923</logger>
+  <level>WARNING</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>expand</method>
+  <thread>12</thread>
+  <message>Only Guaranteed Losses Found: [( true ( cell 3 1 o ) ), ( true ( cell 2 2 x ) ), ( true ( cell 1 3 x ) ), ( true ( cell 2 1 o ) ), ( true ( cell 2 3 x ) ), ( true ( cell 1 1 b ) ), ( true ( cell 3 2 b ) ), ( true ( control oplayer ) ), ( true ( cell 3 3 o ) ), ( true ( cell 1 2 x ) )]</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:45</date>
+  <millis>1367995365567</millis>
+  <sequence>8</sequence>
+  <logger>game1367995337923</logger>
+  <level>WARNING</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>expand</method>
+  <thread>12</thread>
+  <message>Only Guaranteed Losses Found: [( true ( cell 3 3 b ) ), ( true ( cell 3 1 o ) ), ( true ( cell 2 2 x ) ), ( true ( cell 1 3 x ) ), ( true ( cell 2 1 o ) ), ( true ( cell 3 2 o ) ), ( true ( cell 2 3 x ) ), ( true ( cell 1 1 b ) ), ( true ( control oplayer ) ), ( true ( cell 1 2 x ) )]</message>
+</record>
+<record>
+  <date>2013-05-07T23:42:45</date>
+  <millis>1367995365627</millis>
+  <sequence>9</sequence>
+  <logger>game1367995337923</logger>
+  <level>WARNING</level>
+  <class>players.BryceMonteCarloTreeSearch</class>
+  <method>expand</method>
+  <thread>12</thread>
+  <message>Only Guaranteed Losses Found: [( true ( cell 3 1 o ) ), ( true ( cell 2 2 x ) ), ( true ( cell 1 3 x ) ), ( true ( cell 2 1 o ) ), ( true ( cell 2 3 x ) ), ( true ( cell 1 1 b ) ), ( true ( cell 3 2 b ) ), ( true ( control oplayer ) ), ( true ( cell 3 3 o ) ), ( true ( cell 1 2 x ) )]</message>
+</record>
+</log>

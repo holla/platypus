@@ -17,6 +17,7 @@ import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
+import org.ggp.base.util.statemachine.implementation.propnet.FirstPropNetStateMachine;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import platypus.logging.PlatypusLogger;
@@ -42,7 +43,7 @@ public class PlatypusPlayer extends StateMachineGamer {
 	@Override
 	public StateMachine getInitialStateMachine() {
 		// TODO Auto-generated method stub
-		return new ProverStateMachine();
+		return new FirstPropNetStateMachine();
 	}
 
 	@Override
@@ -95,13 +96,13 @@ public class PlatypusPlayer extends StateMachineGamer {
 		long start = System.currentTimeMillis();
 		playerResult.setBestMoveSoFar(null);
 
-		System.out.println("Called select move with:");
-		System.out.println("Current State: " + getCurrentState().toString());
-		System.out.println("Current Role: " + getRole().toString());
+		//System.out.println("Called select move with:");
+		//System.out.println("Current State: " + getCurrentState().toString());
+		//System.out.println("Current Role: " + getRole().toString());
 		String stateFile = StateSave.save(getCurrentState());
 		String roleFile = StateSave.save(getRole());
-		System.out.println("State written to: " + stateFile);
-		System.out.println("Role written to: " + roleFile);
+		//System.out.println("State written to: " + stateFile);
+		//System.out.println("Role written to: " + roleFile);
 
 		List<Move> moves = getStateMachine().getLegalMoves(getCurrentState(),
 				getRole());
@@ -147,42 +148,41 @@ public class PlatypusPlayer extends StateMachineGamer {
 			/* Sleep for 2 seconds less than the maximum time allowed */
 			Thread.sleep(2500);
 		} catch (InterruptedException e) {
-			System.out.println("Done with subplayer!");
+			//System.out.println("Done with subplayer!");
 			// e.printStackTrace();
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */
 		minimaxThread.interrupt();
-		Move sureMove = playerResult.sureMove;
-		System.out.println("--------Best Move after Minimiax--------");
+		Move sureMove = playerResult.getSureMove();
+		log.info("--------Best Move after Minimiax--------");
 		if (sureMove == null) {
-			System.out.println("sure move is null: Minimax did not result in anything");
+			log.info("sure move is null: Minimax did not result in anything");
 		}else {
-			System.out.println("Sure move is " + playerResult.sureMove);
-			System.out.println("with the sure score of " + playerResult.sureScore);
+			log.info("Sure move is " + playerResult.sureMove);
+			log.info("with the sure score of " + playerResult.getSureScore());
 			
-			if (playerResult.sureScore == 100 || playerResult.gameSolved){
+			if (playerResult.sureScore == 100 || playerResult.getGameSolved()){
 				long stop = System.currentTimeMillis();
-				System.out.println("Game solved!");
-				System.out.println("Choosing move "+ playerResult.sureMove + " after minimax preliminary search");
+				log.info("Game solved!");
+				log.info("Choosing move "+ playerResult.sureMove + " after minimax preliminary search");
 				notifyObservers(new GamerSelectedMoveEvent(moves, sureMove, stop- start));
 				return sureMove;
 			}
 		}
 		
-		
 
 		Thread playerThread = new Thread(new BryceMonteCarloTreeSearch(
 				getStateMachine(), getRole(), playerResult, getCurrentState(),
 				log));
-		System.out.println("Starting Monte Carlo");
+		log.info("Starting Monte Carlo");
 		playerThread.start();
 		try {
 			/* Sleep for 1 secondd less than the maximum time allowed */
-			long sleeptime = timeout - start - 2500 - 100;
-			System.out.println("PAUSING PLATYPUS FOR " + sleeptime);
+			long sleeptime = timeout - System.currentTimeMillis() - 2000 - 1000;
+			log.info("PAUSING PLATYPUS FOR " + sleeptime);
 			Thread.sleep(sleeptime);
 		} catch (InterruptedException e) {
-			System.out.println("Done with subplayer!");
+			log.info("Done with subplayer!");
 			// e.printStackTrace();
 		}
 		/* Tell the thread searching for the best move it is done so it can exit */
@@ -191,19 +191,20 @@ public class PlatypusPlayer extends StateMachineGamer {
 			/* Sleep for 2 seconds less than the maximum time allowed */
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			System.out.println("Done with subplayer!");
+			log.info("Done with subplayer!");
 			// e.printStackTrace();
 		}
 		Move bestMove = playerResult.getBestMoveSoFar();
-		System.out.println("--------Best Move after Monte Carlo--------");
+		log.info("--------Best Move after Monte Carlo--------");
 		if (bestMove == null) {
 			bestMove = moves.get(new Random().nextInt(moves.size()));
-			System.out.println("CHOSE RANDOM");
+			log.info("CHOSE RANDOM");
 		}
 		long stop = System.currentTimeMillis();
-		System.out.println("best move: " + bestMove);
+		log.info("best move: " + bestMove);
 		notifyObservers(new GamerSelectedMoveEvent(moves, bestMove, stop
 				- start));
+		//log.info("Time left: " + timeout-)
 		return bestMove;
 	}
 

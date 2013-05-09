@@ -57,4 +57,24 @@ public class PlayerResult{
 	public synchronized boolean containsMemoizedStateGoal(MachineState state){
 		return memoizedMachineStateGoals.containsKey(state);
 	}
+	
+	public synchronized Move getSureMove(){
+		return sureMove;
+	}
+	public synchronized void setSureMove(Move sureMove){
+		this.sureMove = sureMove;
+	}
+	
+	public synchronized double getSureScore(){
+		return sureScore;
+	}
+	public synchronized void setSureScore(double score){
+		this.sureScore = sureScore;
+	}
+	public synchronized void setGameSolved(boolean gameSolved){
+		this.gameSolved = gameSolved;
+	}
+	public synchronized boolean getGameSolved(){
+		return gameSolved;
+	}
 }

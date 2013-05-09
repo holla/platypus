@@ -57,12 +57,12 @@ public class WinCheckBoundedSearch extends Subplayer {
 						score = result;
 						System.out.println("best move so far: "+ move+ "(" + score+")");
 						bestMoveSoFar = move;
-						playerResult.sureMove = bestMoveSoFar;
-						playerResult.sureScore = score;
+						playerResult.setSureMove(bestMoveSoFar);
+						playerResult.setSureScore(score);
 					}
 				}
 				if (gameSolved_temp){
-					playerResult.gameSolved = true;
+					playerResult.setGameSolved(true);
 					return;
 				}
 

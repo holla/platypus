@@ -30,7 +30,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 	private static final double epsilon = 1e-6;
 
 	/* Enables a check to only expand to nodes that won't cause the player to get a score of 0 in a terminal state */
-	private static final boolean GUARANTEED_LOSSES_SINGLE_MOVE_CHECK = true;
+	private static final boolean GUARANTEED_LOSSES_SINGLE_MOVE_CHECK = false;
 
 	public BryceMonteCarloTreeSearch(StateMachine stateMachine, Role role,
 			PlayerResult playerResult, MachineState currentState, Logger logger) {
@@ -43,6 +43,7 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 	public void run() {
 		try {
 			GameNode currentNode = new GameNode(currentState);
+			int numDepthCharges = 0;
 			while(true){
 				/* Loop over 4 stages until time is up */
 
@@ -52,16 +53,15 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 				expand(targetNode);
 				/* Estimate value of leaf */
 				double simulatedValue= 0;
-				for(int i=0; i< 2; i++){
-					MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
-					simulatedValue+= stateMachine.getGoal(simulatedTerminalState, role) / 2;
-				}
-
+				MachineState simulatedTerminalState = stateMachine.performDepthCharge(targetNode.state, null);
+				simulatedValue+= stateMachine.getGoal(simulatedTerminalState, role) / 2;
+				numDepthCharges++;
 				/* Put the values back into the tree! */
 				backPropogate(targetNode,simulatedValue);
 				if(Thread.currentThread().isInterrupted()) break;
 			}
 
+			System.out.println("Depth charges: " + numDepthCharges);
 			/*  Choose the move that gives the node with the highest value to give back to the player */
 			double bestValue = Double.MIN_VALUE;
 
@@ -77,11 +77,15 @@ public class BryceMonteCarloTreeSearch extends Subplayer{
 					MachineState acquiredState = stateMachine.getNextState(currentState,movesToMake);
 					GameNode acquiredNode = stateValues.get(acquiredState);
 					//System.out.println(acquiredNode);
-					double acquiredStateValue = acquiredNode.numVisits;
-					if(acquiredStateValue < moveMinValue){
-						moveMinValue = acquiredStateValue;
+					if(acquiredNode!=null){
+						double acquiredStateValue = acquiredNode.numVisits;
+						if(acquiredStateValue < moveMinValue){
+							moveMinValue = acquiredStateValue;
+						}
+						totalVisits +=acquiredNode.numVisits;
+					}else{
+						System.out.println("Move not explored in tree: " + movesToMake);
 					}
-					totalVisits +=acquiredNode.numVisits;
 				}
 				log.info("move: " + move + " value: " + moveMinValue + " visited: " + totalVisits);
 				if(moveMinValue > bestValue){
