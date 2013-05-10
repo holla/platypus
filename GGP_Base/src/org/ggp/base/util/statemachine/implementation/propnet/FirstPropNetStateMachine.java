@@ -56,40 +56,53 @@ public class FirstPropNetStateMachine extends StateMachine {
     	}
     }    
     
-    private boolean propMarkConjunction(Component p){
+    private boolean propMarkConjunction(Component p, boolean isRecur){
     	for (Component c : p.getInputs()){
-			if(!propMarkP(c)){
+			if(!propMarkP(c, isRecur)){
 				return false;
 			}
 		}
 		return true;
     }
     
-    private boolean propMarkDisjunction(Component p){
+    private boolean propMarkDisjunction(Component p, boolean isRecur){
     	for (Component c : p.getInputs()){
-			if(propMarkP(c)){
+			if(propMarkP(c, isRecur)){
 				return true;
 			}
 		}
 		return false;
     }
 
-    private boolean propMarkP(Component p){
+    
+    private boolean propMarkPNonRecursive(Component p){
+    	return propMarkP(p, false);
+    }
+    
+    private boolean propMarkPRecursive(Component p){
+    	return propMarkP(p, true);
+    }
+    
+    private boolean propMarkP(Component p, boolean isRecur){
     	if(p instanceof Proposition){ //should return false when reaching init?
     		Proposition prop = (Proposition)p;
     		if(isBase(prop) || isInput(prop) || prop == propNet.getInitProposition()){
     			return prop.getValue();
     		}else{
-    			return propMarkP(p.getSingleInput());
+    			if(!isRecur){
+    				return p.getValue();
+    			}else{
+    				return propMarkP(p.getSingleInput(), isRecur);
+    			}
     		}
     	}else if (p instanceof Constant){
     		return p.getValue();
     	}else if (p instanceof And){
-    		return propMarkConjunction(p);
+    		return propMarkConjunction(p, isRecur);
     	}else if (p instanceof Not){
-    		return !propMarkP(p.getSingleInput());
+    		return !propMarkP(p.getSingleInput(), isRecur);
     	}else if (p instanceof Or){
-    		return propMarkDisjunction(p);
+    		return propMarkDisjunction(p, isRecur);
     	}
     	return false;
     }
@@ -114,7 +127,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 	@Override
 	public synchronized boolean isTerminal(MachineState state) {
 		markBases(state);
-		boolean result = propMarkP(propNet.getTerminalProposition());
+		boolean result = propMarkPRecursive(propNet.getTerminalProposition());
 		clearPropNet();
 		//System.out.println("The result: "+result);
 		return result;
@@ -135,7 +148,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		boolean found = false;
 		Proposition goal = null;
 		for(Proposition p : goalProps){
-			if(propMarkP(p)){
+			if(propMarkPRecursive(p)){
 				if(found) {
 					clearPropNet();
 					throw new GoalDefinitionException(state, role);
@@ -182,7 +195,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		markBases(state);
 		Set<Proposition> legals = propNet.getLegalPropositions().get(role);
 		for(Proposition legal: legals){
-			if(propMarkP(legal)){
+			if(propMarkPRecursive(legal)){
 				listMoves.add(getMoveFromProposition(legal));
 			}
 		}
@@ -207,10 +220,9 @@ public class FirstPropNetStateMachine extends StateMachine {
 		markBases(state);
 		
 		//HashMap<Proposition, Boolean> next = new HashMap<Proposition, Boolean>();
+
 		for(Proposition p: ordering){
-			p.setValue(propMarkP(p));
-			
-			//next.put(p, result);
+			p.setValue(propMarkPNonRecursive(p.getSingleInput()));
 		}
 		//for(Proposition p: next.keySet()){
 		//	p.setValue(next.get(p));
@@ -330,7 +342,7 @@ public class FirstPropNetStateMachine extends StateMachine {
 		
 		while(noIncoming.size() > 0){
 			Component node = noIncoming.remove(0);
-			if(node instanceof Proposition && !isBase(node) && !isInput(node)){
+			if(node instanceof Proposition && !isBase(node) && !isInput(node) && node != propNet.getInitProposition()){
 					order.add((Proposition)node);
 			}
 			Set<Component> outputs = node.getOutputs();
