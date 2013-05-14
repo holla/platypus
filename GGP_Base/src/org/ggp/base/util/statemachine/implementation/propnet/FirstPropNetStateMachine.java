@@ -175,9 +175,9 @@ public class FirstPropNetStateMachine extends StateMachine {
 	@Override
 	public synchronized MachineState getInitialState() {
 		propNet.getInitProposition().setValue(true);
-		//for(Proposition p : propNet.getBasePropositions().values()){
-			//p.setValue(propMarkP(p));
-		//}
+		for(Proposition p: ordering){
+			p.setValue(propMarkPNonRecursive(p.getSingleInput()));
+		}
 		MachineState state = getStateFromBase();
 		clearPropNet();
 		return state;
