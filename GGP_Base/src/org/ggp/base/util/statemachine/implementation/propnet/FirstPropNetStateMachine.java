@@ -49,6 +49,8 @@ public class FirstPropNetStateMachine extends StateMachine {
     		propNet = OptimizingPropNetFactory.create(description);
     		roles = propNet.getRoles();
     		ordering = getOrdering();
+    		
+    		Set<Set<Component>> factors = factorPropNet();
     	
     		
     	}catch(InterruptedException ex){
@@ -73,6 +75,9 @@ public class FirstPropNetStateMachine extends StateMachine {
 		}
 		return false;
     }
+    
+    
+  
 
     
     private boolean propMarkPNonRecursive(Component p){
@@ -132,6 +137,79 @@ public class FirstPropNetStateMachine extends StateMachine {
 		//System.out.println("The result: "+result);
 		return result;
 	}
+	
+	private Set<Set<Component>> factorPropNet(){
+        Map<Component,Set<Component>> propFactors = new HashMap<Component,Set<Component>>();
+        
+        Set<Component> initialFactor = new HashSet<Component>();
+        
+        /* Recursively construct factor trees, copying factors at every or transition and joining factors at every and transition 
+         * Initialize the starting component to be the terminal node in the net and put it in the initial factor
+         */
+        Component terminalProp = propNet.getTerminalProposition();
+        initialFactor.add(terminalProp);
+        propFactors.put(terminalProp,initialFactor);
+        
+        recursiveFactorPropNet(propFactors,terminalProp);
+        
+        /* Iterate over base propositions to find distinct complete trees to create set of factors */
+        Set<Set<Component>> factors = new HashSet<Set<Component>>(propFactors.values());
+        System.out.println("Found " + factors.size() + " factors.");
+        return factors;
+    }
+    
+    private void recursiveFactorPropNet(Map<Component,Set<Component>> propFactors, Component currentComponent){
+    	if(isBase(currentComponent) || isInput(currentComponent) || currentComponent == propNet.getInitProposition()){
+            /* Done with the current factor */
+            return;
+        }
+        
+        if(currentComponent instanceof Or){
+            /* Create a copy of the factor for each parent, then recurse on those factors */
+            for(Component comp : currentComponent.getInputs()){
+                Set<Component> newFactor = new HashSet<Component>(propFactors.get(currentComponent));
+                newFactor.add(comp);
+                propFactors.put(comp,newFactor);
+                recursiveFactorPropNet(propFactors, comp);
+            }
+            return;
+        }
+        
+        if(currentComponent instanceof And){
+            /* Merge each of the factors from the parents of the currentComponent, if they exist
+             * Add the currentComponent to the factor as well
+             */
+
+            Set<Component> mergedSet = propFactors.get(currentComponent);
+            
+            for(Component comp : currentComponent.getInputs()){
+                if(propFactors.containsKey(comp)){
+                    Set<Component> parentFactor = propFactors.get(comp);
+                    mergedSet.addAll(parentFactor);
+                }
+                mergedSet.add(comp);
+                /* Associate each parent with the new merged set */
+                propFactors.put(comp,mergedSet);
+
+            }
+            
+            for(Component comp : currentComponent.getInputs()){
+                /* Recurse on all inputs */
+                recursiveFactorPropNet(propFactors,comp);
+            }          
+            return;
+        }
+        
+        /* Default case, where there is only a single parent.  Simply pass the currentFactor up and add 
+         * the current node to that factor.
+         */
+        Set<Component> currentFactor = propFactors.get(currentComponent);
+        Component parent = currentComponent.getSingleInput();
+        currentFactor.add(parent);
+        propFactors.put(parent, currentFactor);
+        
+        recursiveFactorPropNet(propFactors,parent);
+    }
 	
 	/**
 	 * Computes the goal for a role in the current state.
